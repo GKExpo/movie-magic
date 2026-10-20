@@ -13,7 +13,7 @@ def health_check():
     return jsonify({
         "status": "healthy",
         "service": "Movie Magic",
-        "version": "1.5.0-curated-catalogue",
+        "version": "1.75.0-verified-posters",
         "environment": current_app.config.get("ENV", "development"),
         "default_city": "Kolhapur",
         "aws_mode": "mock/demo" if current_app.config.get("USE_AWS_MOCK") else "live",

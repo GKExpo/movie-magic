@@ -21,6 +21,9 @@ class Config:
     WTF_CSRF_ENABLED = True
     WTF_CSRF_TIME_LIMIT = 3600
 
+    # TMDB Metadata Configuration (Optional enrichment; local catalogue works without it)
+    TMDB_API_KEY = os.environ.get("TMDB_API_KEY", "")
+
     # AWS Configuration Stubs (Phase 1)
     AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
     AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")

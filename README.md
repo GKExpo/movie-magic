@@ -4,6 +4,27 @@ A modern, cloud-native movie ticket booking application built with **Flask**, de
 
 ---
 
+## 🚀 Phase 1.75: Verified Real Movie Posters & Image Integration
+
+Phase 1.75 brings genuine, network-verified theatrical poster art from **The Movie Database (TMDB)** for all 28 catalogue titles across Anime, Marvel, and South Indian cinema, while adhering to TMDB's usage policies:
+
+- **100% Genuine Theatrical Artwork**:
+  - All 28 titles audited against TMDB CDN (`https://image.tmdb.org/t/p/w500/...`).
+  - Network verified with HTTP 200 responses, standard 2:3 theatrical aspect ratios, and `object-fit: cover`.
+  - Machine-readable manifest generated at `app/data/poster_manifest.json`.
+- **Zero Runtime Dependency**:
+  - Movie page requests load directly using verified static CDN URLs with graceful HTML/CSS local gradient fallback on image errors (`onerror`).
+  - Core app functionality never makes live external API calls at user request time.
+- **Repeatable Sync & Verification Utility (`scripts/sync_movie_posters.py`)**:
+  - Audits catalogue against TMDB API or audited canonical fallback dataset.
+  - Supports `--dry-run`, `--verify-urls` (HTTP network check), and `--update-data`.
+- **Admin Live Poster Preview**:
+  - Real-time client-side preview in the admin movie form (`/admin/movies/new` and `/admin/movies/<id>/edit`) with fallback testing.
+- **TMDB Attribution**:
+  - Mandatory TMDB footer badge and attribution statement: *"This product uses the TMDB API but is not endorsed or certified by TMDB."*
+
+---
+
 ## 🚀 Phase 1.5: Real Movie Catalogue & Kolhapur Theatres
 
 Phase 1.5 upgrades Movie Magic from generic placeholder data to a curated, verified cinema catalogue and real cinema venues in **Kolhapur, Maharashtra, India**, while enforcing a strict separation between catalogue films and actual bookable showtimes:
@@ -44,7 +65,7 @@ Phase 1.5 upgrades Movie Magic from generic placeholder data to a curated, verif
 | **Database (Planned Phase 2)** | Amazon DynamoDB |
 | **Messaging (Planned Phase 2)** | Amazon SNS (Booking Confirmation Emails) |
 | **Hosting & Web Server** | Amazon EC2, Gunicorn (WSGI), Nginx reverse proxy |
-| **Testing** | Pytest 8+ (36 automated tests) |
+| **Testing** | Pytest 8+ (46 automated tests) |
 
 ---
 
@@ -81,13 +102,26 @@ TMDB_API_KEY=your_free_tmdb_api_key_here
 *Note: Movie Magic functions out of the box without any third-party API key.*
 
 ### 5. Run the Automated Test Suite
-Execute pytest to run the complete 36-test suite:
+Execute pytest to run the complete 46-test suite:
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
 ```
-*Expected result: 36 passed in < 1 second.*
+*Expected result: 46 passed in < 1.5 seconds.*
 
-### 6. Start the Flask Development Server
+### 6. Verify & Audit Movie Posters (Optional CLI Utility)
+Audit and verify the 28 catalogue posters against TMDB CDN and local metadata:
+```powershell
+# Safe inspection / dry-run (no file modifications)
+.\.venv\Scripts\python.exe scripts/sync_movie_posters.py --dry-run
+
+# Network check (verifies HTTP 200 image responses over the network)
+.\.venv\Scripts\python.exe scripts/sync_movie_posters.py --dry-run --verify-urls
+
+# Update catalogue file and refresh poster manifest
+.\.venv\Scripts\python.exe scripts/sync_movie_posters.py --update-data --verify-urls
+```
+
+### 7. Start the Flask Development Server
 ```powershell
 python run.py
 ```
@@ -116,7 +150,7 @@ Invoke-RestMethod -Uri "http://127.0.0.1:5000/health"
 {
   "status": "healthy",
   "service": "Movie Magic",
-  "version": "1.5.0-curated-catalogue",
+  "version": "1.75.0-verified-posters",
   "environment": "development",
   "default_city": "Kolhapur",
   "aws_mode": "mock/demo"
