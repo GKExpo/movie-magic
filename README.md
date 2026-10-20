@@ -112,7 +112,7 @@ Phase 1.5 upgrades Movie Magic from generic placeholder data to a curated, verif
 | **Database** | Amazon DynamoDB (`ap-south-1` Mumbai, on-demand PAY_PER_REQUEST, with mock fallback) |
 | **Messaging** | Amazon SNS (Booking confirmation notifications with mock fallback) |
 | **Hosting & Web Server** | Amazon EC2, Gunicorn (WSGI), Nginx reverse proxy |
-| **Testing** | Pytest 8+ (121 automated tests) |
+| **Testing** | Pytest 8+ (126 automated tests) |
 
 ---
 
@@ -149,11 +149,11 @@ TMDB_API_KEY=your_free_tmdb_api_key_here
 *Note: Movie Magic functions out of the box without any third-party API key.*
 
 ### 5. Run the Automated Test Suite
-Execute pytest to run the complete 121-test suite:
+Execute pytest to run the complete 126-test suite:
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
 ```
-*Expected result: 121 passed in < 3.5 seconds.*
+*Expected result: 126 passed in < 3.5 seconds.*
 
 ### 6. Inspect DynamoDB Table Schemas & Catalogue Seeder (Dry-Run)
 Inspect table schemas and catalogue seeding data safely in read-only mode:
@@ -213,6 +213,124 @@ Invoke-RestMethod -Uri "http://127.0.0.1:5000/health"
   "aws_mode": "mock/demo"
 }
 ```
+
+---
+
+## 🚀 Amazon EC2 Production Deployment Guide
+
+Follow this guide to deploy Movie Magic on an Amazon EC2 instance using **Gunicorn**, **Nginx**, and an **IAM Instance Role** with least-privilege permissions.
+
+### Prerequisites & Architecture
+- **AWS Region**: `ap-south-1` (Mumbai)
+- **Instance Type**: `t3.micro` or `t2.micro` (AWS Free Tier eligible)
+- **OS**: Amazon Linux 2023 (AL2023)
+- **Security**: No AWS access keys on the server; credentials resolve automatically via the attached EC2 IAM Role.
+- **Port Mapping**:
+  - Inbound Port 80 (HTTP) -> Nginx Reverse Proxy -> Gunicorn WSGI (`127.0.0.1:5000`) -> Flask
+  - Inbound Port 22 (SSH) -> Administrative access
+
+---
+
+### Step 1: Create the Least-Privilege IAM Role for EC2
+
+1. Open **AWS Management Console** > **IAM** > **Policies** > **Create policy**.
+2. Select the **JSON** tab and paste the contents of `deploy/iam-ec2-policy.json`.
+3. Name the policy: `MovieMagicEC2AppPolicy`.
+4. Navigate to **IAM** > **Roles** > **Create role**.
+5. Choose **AWS service** as the trusted entity type and select **EC2**.
+6. Attach the policy created above: `MovieMagicEC2AppPolicy`.
+7. Name the role: `MovieMagicEC2Role` and click **Create role**.
+
+---
+
+### Step 2: (Optional) Create Amazon SNS Booking Notification Topic
+
+If you want live email notifications dispatched for completed bookings:
+1. Open **Amazon SNS** > **Topics** > **Create topic**.
+2. Type: **Standard**.
+3. Name: `moviemagic-booking-notifications`.
+4. Click **Create topic**, then copy the generated **Topic ARN** (e.g. `arn:aws:sns:ap-south-1:123456789012:moviemagic-booking-notifications`).
+5. Under **Subscriptions**, click **Create subscription**:
+   - Protocol: `Email`
+   - Endpoint: `your-email@example.com`
+6. Click **Create subscription**.
+7. Check your email inbox and click **"Confirm subscription"** in the verification email from AWS.
+
+---
+
+### Step 3: Launch the EC2 Instance
+
+1. Open **EC2 Console** > **Instances** > **Launch instances**.
+2. **Name**: `Movie-Magic-Production`.
+3. **AMI**: Amazon Linux 2023 AMI (AL2023).
+4. **Instance type**: `t3.micro` (or `t2.micro`).
+5. **Key pair**: Select your existing key pair or create one.
+6. **Network settings** > **Edit**:
+   - Auto-assign public IP: **Enable**
+   - Security group rule 1: SSH (Port 22) from `My IP`.
+   - Security group rule 2: HTTP (Port 80) from `Anywhere (0.0.0.0/0)`.
+7. **Advanced details** > **IAM instance profile**:
+   - Select `MovieMagicEC2Role`.
+8. Click **Launch instance**.
+
+---
+
+### Step 4: Run the Deployment Script
+
+1. Connect to your EC2 instance via SSH or AWS EC2 Instance Connect:
+   ```bash
+   ssh -i your-key.pem ec2-user@<EC2-PUBLIC-IP>
+   ```
+2. Clone the repository and execute the automated setup script:
+   ```bash
+   git clone https://github.com/GKExpo/movie-magic.git
+   cd movie-magic
+   sudo bash deploy/ec2-setup.sh
+   ```
+3. If using Amazon SNS, edit the generated `.env` file to add your Topic ARN:
+   ```bash
+   nano /home/ec2-user/movie-magic/.env
+   # Set: SNS_BOOKING_TOPIC_ARN=arn:aws:sns:ap-south-1:...
+   # Save and restart the service:
+   sudo systemctl restart moviemagic
+   ```
+
+---
+
+### Step 5: Verification & End-to-End Testing
+
+1. **Health Check Probe**:
+   Open in your browser:
+   `http://<EC2-PUBLIC-IP>/health`
+   Expected response:
+   ```json
+   {
+     "status": "healthy",
+     "service": "Movie Magic",
+     "version": "1.75.0-verified-posters",
+     "environment": "production",
+     "default_city": "Kolhapur",
+     "aws_mode": "live"
+   }
+   ```
+2. **Catalogue & Venue Browsing**:
+   Visit `http://<EC2-PUBLIC-IP>/` to verify that all 28 movies, 5 Kolhapur theatres, and demo showtimes load live from DynamoDB.
+3. **User Registration & Login**:
+   Register a new account (e.g. `student@test.com`) with a strong password. Log in and verify that the session persists.
+4. **Seat Selection & Booking**:
+   Select a movie, choose seats (e.g. `C4`, `C5`), and complete the reservation. Verify the confirmation receipt displays with your booking reference.
+5. **Atomic Concurrency Test**:
+   Open an incognito window, log in as another user, and attempt to reserve the exact same seat (`C4`). Verify that the system cleanly rejects the reservation with:
+   `"Seat C4 has already been reserved. Please choose another seat."`
+6. **Inspect Application Logs**:
+   ```bash
+   # Live application logs
+   journalctl -u moviemagic.service -f
+   
+   # Nginx access and error logs
+   sudo tail -f /var/log/nginx/access.log
+   sudo tail -f /var/log/nginx/error.log
+   ```
 
 ---
 

@@ -38,7 +38,7 @@ class DevelopmentConfig(Config):
     """Development environment configuration."""
     DEBUG = True
     TESTING = False
-    USE_AWS_MOCK = True
+    USE_AWS_MOCK = os.environ.get("USE_AWS_MOCK", "True").lower() in ("true", "1", "yes")
 
 
 class TestingConfig(Config):
@@ -54,8 +54,8 @@ class ProductionConfig(Config):
     """Production environment configuration with hardened security."""
     DEBUG = False
     TESTING = False
-    SESSION_COOKIE_SECURE = True
-    USE_AWS_MOCK = False
+    SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE", "False").lower() in ("true", "1", "yes")
+    USE_AWS_MOCK = os.environ.get("USE_AWS_MOCK", "False").lower() in ("true", "1", "yes")
 
     @classmethod
     def init_app(cls, app):
