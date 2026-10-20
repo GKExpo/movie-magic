@@ -4,6 +4,35 @@ A modern, cloud-native movie ticket booking application built with **Flask**, de
 
 ---
 
+## 🚀 Phase 2: Amazon DynamoDB Integration (Milestone 1 Complete)
+
+Phase 2 transitions Movie Magic to a cloud-native AWS architecture using Amazon DynamoDB in the **`ap-south-1` (Mumbai)** region:
+
+- **Boto3 AWS Client Factory & Credential Chain**:
+  - Centralized in `app/aws/client_factory.py`.
+  - Supports standard AWS credential resolution (IAM roles on EC2 IMDSv2, AWS credentials file, profiles, environment variables).
+  - Configurable `DYNAMODB_ENDPOINT_URL` for local DynamoDB (`http://localhost:8000`) or testing containers.
+  - Zero-cost mock mode (`USE_AWS_MOCK=True`) active by default, ensuring zero external network calls or costs during local development.
+- **On-Demand Table Architecture (6 Tables, PAY_PER_REQUEST)**:
+  1. `moviemagic_users` (PK: `user_id`, GSI: `EmailIndex` on `email`)
+  2. `moviemagic_movies` (PK: `movie_id`, GSI: `CategoryIndex` on `category` + `release_year`)
+  3. `moviemagic_theaters` (PK: `theater_id`, GSI: `CityStatusIndex` on `city` + `operational_status`)
+  4. `moviemagic_showtimes` (PK: `showtime_id`, GSIs: `MovieShowtimeIndex`, `TheaterShowtimeIndex`)
+  5. `moviemagic_bookings` (PK: `booking_id`, GSI: `UserBookingsIndex` on `user_id` + `created_at`)
+  6. `moviemagic_show_seats` (PK: `show_key`, SK: `seat_code` — Atomic double-booking prevention)
+- **Infrastructure Management CLI (`scripts/create_dynamodb_tables.py`)**:
+  - Safe inspection by default (`--check`).
+  - Requires explicit opt-in (`--create`) to provision resources.
+  - Automatic schema and GSI mismatch detection.
+  - Never deletes tables or data automatically.
+- **Idempotent Catalogue Seeder CLI (`scripts/seed_dynamodb.py`)**:
+  - Populates verified catalogue movies (28), venues (5), and demo showtimes (6).
+  - Converts floating-point numbers to Python `Decimal` for DynamoDB compatibility.
+  - **Strict Customer Protection Guard**: Under no circumstance will `users`, `bookings`, or `show_seats` tables be touched or overwritten by the seeder.
+  - Supports safe read-only preview by default (`--check`) and explicit opt-in (`--seed`).
+
+---
+
 ## 🚀 Phase 1.75: Verified Real Movie Posters & Image Integration
 
 Phase 1.75 brings genuine, network-verified theatrical poster art from **The Movie Database (TMDB)** for all 28 catalogue titles across Anime, Marvel, and South Indian cinema, while adhering to TMDB's usage policies:
@@ -62,10 +91,10 @@ Phase 1.5 upgrades Movie Magic from generic placeholder data to a curated, verif
 | **Frontend** | HTML5, CSS3, JavaScript (ES6+), Bootstrap 5, Bootstrap Icons |
 | **Security** | Werkzeug Security, Flask-WTF (CSRF), itsdangerous |
 | **AWS SDK** | `boto3` (Centralized adapter with local/demo mock fallback) |
-| **Database (Planned Phase 2)** | Amazon DynamoDB |
+| **Database** | Amazon DynamoDB (`ap-south-1` Mumbai, on-demand PAY_PER_REQUEST, with mock fallback) |
 | **Messaging (Planned Phase 2)** | Amazon SNS (Booking Confirmation Emails) |
 | **Hosting & Web Server** | Amazon EC2, Gunicorn (WSGI), Nginx reverse proxy |
-| **Testing** | Pytest 8+ (46 automated tests) |
+| **Testing** | Pytest 8+ (73 automated tests) |
 
 ---
 
@@ -102,13 +131,23 @@ TMDB_API_KEY=your_free_tmdb_api_key_here
 *Note: Movie Magic functions out of the box without any third-party API key.*
 
 ### 5. Run the Automated Test Suite
-Execute pytest to run the complete 46-test suite:
+Execute pytest to run the complete 73-test suite:
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
 ```
-*Expected result: 46 passed in < 1.5 seconds.*
+*Expected result: 73 passed in < 1.5 seconds.*
 
-### 6. Verify & Audit Movie Posters (Optional CLI Utility)
+### 6. Inspect DynamoDB Table Schemas & Catalogue Seeder (Dry-Run)
+Inspect table schemas and catalogue seeding data safely in read-only mode:
+```powershell
+# Inspect DynamoDB table definitions and schema checks (read-only)
+.\.venv\Scripts\python.exe scripts/create_dynamodb_tables.py --check
+
+# Dry-run inspection of catalogue movies and Kolhapur theatres dataset
+.\.venv\Scripts\python.exe scripts/seed_dynamodb.py --check
+```
+
+### 7. Verify & Audit Movie Posters (Optional CLI Utility)
 Audit and verify the 28 catalogue posters against TMDB CDN and local metadata:
 ```powershell
 # Safe inspection / dry-run (no file modifications)
@@ -121,7 +160,7 @@ Audit and verify the 28 catalogue posters against TMDB CDN and local metadata:
 .\.venv\Scripts\python.exe scripts/sync_movie_posters.py --update-data --verify-urls
 ```
 
-### 7. Start the Flask Development Server
+### 8. Start the Flask Development Server
 ```powershell
 python run.py
 ```

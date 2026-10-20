@@ -24,11 +24,12 @@ class Config:
     # TMDB Metadata Configuration (Optional enrichment; local catalogue works without it)
     TMDB_API_KEY = os.environ.get("TMDB_API_KEY", "")
 
-    # AWS Configuration Stubs (Phase 1)
-    AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
+    # AWS Configuration (Phase 2: ap-south-1 Mumbai)
+    AWS_REGION = os.environ.get("AWS_REGION", "ap-south-1")
     AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
     AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
     DYNAMODB_TABLE_PREFIX = os.environ.get("DYNAMODB_TABLE_PREFIX", "moviemagic_")
+    DYNAMODB_ENDPOINT_URL = os.environ.get("DYNAMODB_ENDPOINT_URL", "")
     SNS_BOOKING_TOPIC_ARN = os.environ.get("SNS_BOOKING_TOPIC_ARN", "")
     USE_AWS_MOCK = os.environ.get("USE_AWS_MOCK", "True").lower() in ("true", "1", "yes")
 
