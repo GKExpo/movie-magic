@@ -19,26 +19,27 @@ class SNSService:
 
     def publish_booking_confirmation(self, booking_details: Dict[str, Any]) -> bool:
         """Publish booking confirmation message to SNS topic."""
+        booking_id = booking_details.get("booking_id") or booking_details.get("id") or "UNKNOWN"
         message = (
             f"🎬 Movie Magic Booking Confirmation\n"
-            f"Booking ID: {booking_details.get('booking_id')}\n"
+            f"Booking ID: {booking_id}\n"
             f"Movie: {booking_details.get('movie_title')}\n"
             f"Theater: {booking_details.get('theater_name')}\n"
             f"Showtime: {booking_details.get('showtime')}\n"
             f"Seats: {', '.join(booking_details.get('seats', []))}\n"
-            f"Total Amount: ${booking_details.get('total_price', 0):.2f}\n"
-            f"Status: Confirmed\n"
+            f"Total Amount: ₹{booking_details.get('total_price', 0):.2f}\n"
+            f"Status: Confirmed (Demo)\n"
             f"Enjoy your movie!"
         )
 
         if not self.is_connected:
-            logger.info(f"[Phase 1 Demo] SNS notification simulated for booking: {booking_details.get('booking_id')}")
+            logger.info(f"[Mock Mode] SNS notification simulated for booking: {booking_id}")
             return True
 
         try:
             self._client.publish(
                 TopicArn=self.topic_arn,
-                Subject=f"Movie Magic Booking Confirmed #{booking_details.get('booking_id')}",
+                Subject=f"Movie Magic Booking Confirmed #{booking_id}",
                 Message=message
             )
             return True

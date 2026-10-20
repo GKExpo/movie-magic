@@ -16,7 +16,15 @@ from .movie_repository import (
     CataloguePersistenceError,
     get_movie_repository,
 )
-from .booking_repository import booking_repository, BookingRepository
+from .booking_repository import (
+    booking_repository,
+    BookingRepository,
+    InMemoryBookingRepository,
+    DynamoDBBookingRepository,
+    DuplicateSeatError,
+    BookingPersistenceError,
+    get_booking_repository,
+)
 
 __all__ = [
     "user_repository",
@@ -35,4 +43,9 @@ __all__ = [
     "get_movie_repository",
     "booking_repository",
     "BookingRepository",
+    "InMemoryBookingRepository",
+    "DynamoDBBookingRepository",
+    "DuplicateSeatError",
+    "BookingPersistenceError",
+    "get_booking_repository",
 ]

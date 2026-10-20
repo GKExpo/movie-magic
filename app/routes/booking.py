@@ -124,6 +124,12 @@ def booking_confirmation(booking_id):
     if not booking:
         abort(404)
 
+    # Authorization guard: Ensure users can only view their own bookings, except for authorized admin operations
+    current_user_id = session.get("user_id")
+    is_admin = session.get("user_role") == "admin"
+    if not is_admin and booking.get("user_id") != current_user_id:
+        abort(403)
+
     movie = movie_service.get_movie_by_id(booking["movie_id"])
 
     return render_template(
