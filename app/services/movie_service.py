@@ -8,8 +8,15 @@ from app.repositories import movie_repository
 class MovieService:
     """Business logic for movie catalog and cinema theater schedules."""
 
-    def __init__(self, repo=movie_repository):
-        self.repo = repo
+    def __init__(self, repo=None):
+        self._repo = repo
+
+    @property
+    def repo(self):
+        """Active movie repository."""
+        if self._repo is not None:
+            return self._repo
+        return movie_repository
 
     def get_featured_movies(self) -> List[Dict[str, Any]]:
         all_movies = self.repo.get_all()

@@ -8,7 +8,14 @@ from .user_repository import (
     normalize_email,
     get_user_repository,
 )
-from .movie_repository import movie_repository, MovieRepository
+from .movie_repository import (
+    movie_repository,
+    MovieRepository,
+    InMemoryMovieRepository,
+    DynamoDBMovieRepository,
+    CataloguePersistenceError,
+    get_movie_repository,
+)
 from .booking_repository import booking_repository, BookingRepository
 
 __all__ = [
@@ -22,6 +29,10 @@ __all__ = [
     "get_user_repository",
     "movie_repository",
     "MovieRepository",
+    "InMemoryMovieRepository",
+    "DynamoDBMovieRepository",
+    "CataloguePersistenceError",
+    "get_movie_repository",
     "booking_repository",
     "BookingRepository",
 ]

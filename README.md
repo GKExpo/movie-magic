@@ -4,10 +4,20 @@ A modern, cloud-native movie ticket booking application built with **Flask**, de
 
 ---
 
-## 🚀 Phase 2: Amazon DynamoDB Integration (Milestones 1 & 2 Complete)
+## 🚀 Phase 2: Amazon DynamoDB Integration (Milestones 1, 2 & 3 Complete)
 
 Phase 2 transitions Movie Magic to a cloud-native AWS architecture using Amazon DynamoDB in the **`ap-south-1` (Mumbai)** region:
 
+- **DynamoDB Catalogue & Venue Integration (Milestone 3)**:
+  - Backed by `moviemagic_movies`, `moviemagic_theaters`, and `moviemagic_showtimes` tables.
+  - **GSI Query Optimization**:
+    - `CategoryIndex` query on `moviemagic_movies` for category browsing (avoiding full-table scans).
+    - `CityStatusIndex` composite query on `moviemagic_theaters` for operational venue filtering by city.
+    - `MovieShowtimeIndex` and `TheaterShowtimeIndex` queries on `moviemagic_showtimes` for separated schedule lookups.
+  - **Pagination & Decimal Handling**: Recursively decodes DynamoDB `Decimal` types into Python `float`/`int` and transparently handles pagination tokens (`LastEvaluatedKey`).
+  - **Demo Showtime Guard**: Demo schedules explicitly maintain `is_verified: False` and `status: "Demo / Sample"` badges and disclaimers.
+  - **Strict Anti-Degradation**: `USE_AWS_MOCK=False` raises an explicit `RuntimeError` if AWS client fails to initialize.
+  - **Mock Mode Continuity**: Seamless in-memory repository fallback during local development.
 - **DynamoDB User Authentication (Milestone 2)**:
   - Backed by `moviemagic_users` table in `ap-south-1`.
   - **Atomic Email Uniqueness**: Enforces email uniqueness via native DynamoDB `TransactWriteItems` writing both User Profile (`user_id = usr-<uuid>`) and Email Lock (`user_id = EMAIL#<email>`) with `attribute_not_exists(user_id)` condition.
@@ -102,7 +112,7 @@ Phase 1.5 upgrades Movie Magic from generic placeholder data to a curated, verif
 | **Database** | Amazon DynamoDB (`ap-south-1` Mumbai, on-demand PAY_PER_REQUEST, with mock fallback) |
 | **Messaging (Planned Phase 2)** | Amazon SNS (Booking Confirmation Emails) |
 | **Hosting & Web Server** | Amazon EC2, Gunicorn (WSGI), Nginx reverse proxy |
-| **Testing** | Pytest 8+ (92 automated tests) |
+| **Testing** | Pytest 8+ (106 automated tests) |
 
 ---
 
@@ -139,11 +149,11 @@ TMDB_API_KEY=your_free_tmdb_api_key_here
 *Note: Movie Magic functions out of the box without any third-party API key.*
 
 ### 5. Run the Automated Test Suite
-Execute pytest to run the complete 92-test suite:
+Execute pytest to run the complete 106-test suite:
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
 ```
-*Expected result: 92 passed in < 3.0 seconds.*
+*Expected result: 106 passed in < 3.5 seconds.*
 
 ### 6. Inspect DynamoDB Table Schemas & Catalogue Seeder (Dry-Run)
 Inspect table schemas and catalogue seeding data safely in read-only mode:
