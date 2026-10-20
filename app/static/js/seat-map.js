@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
   seatButtons.forEach((seat) => {
     seat.addEventListener("click", function () {
       const seatId = this.getAttribute("data-seat-id");
-      const seatPrice = parseFloat(this.getAttribute("data-price") || 12.0);
+      const seatPrice = parseFloat(this.getAttribute("data-price") || 160.0);
 
       const index = selectedSeats.findIndex((s) => s.id === seatId);
 
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (totalPriceDisplay) {
-      totalPriceDisplay.textContent = "$" + total.toFixed(2);
+      totalPriceDisplay.textContent = "₹" + total.toFixed(2);
     }
 
     if (checkoutBtn) {

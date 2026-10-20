@@ -19,27 +19,28 @@ class BookingRepository(BaseRepository):
 
     def _seed_sample_bookings(self):
         """Seed initial realistic booked seats and demo booking record."""
-        # Pre-reserve a few seats for demo realism
-        key1 = self._get_show_key("mov-1", "th-1", "10:30 AM")
+        # Pre-reserve seats for Pushpa 2 at PVR DYP City Mall, Kolhapur
+        key1 = self._get_show_key("mov-south-1", "th-pvr-dyp", "10:30 AM")
         self._occupied_seats[key1] = {"A4", "A5", "C6", "C7", "D3"}
 
-        key2 = self._get_show_key("mov-2", "th-3", "03:30 PM")
-        self._occupied_seats[key2] = {"B4", "B5", "E1", "E2"}
+        # Legacy demo key support for test fixtures
+        key_legacy = self._get_show_key("mov-1", "th-1", "10:30 AM")
+        self._occupied_seats[key_legacy] = {"A4", "A5", "C6", "C7", "D3"}
 
         sample_booking = {
             "id": "MM-2026-DEMO-001",
             "user_id": "usr-demo-1",
             "user_email": "demo@moviemagic.com",
-            "movie_id": "mov-1",
-            "movie_title": "Cosmic Odyssey: Beyond the Nebula",
-            "theater_id": "th-1",
-            "theater_name": "Starlight IMAX & Laser (New York)",
+            "movie_id": "mov-south-1",
+            "movie_title": "Pushpa 2: The Rule",
+            "theater_id": "th-pvr-dyp",
+            "theater_name": "PVR DYP City Mall (Kolhapur)",
             "showtime": "10:30 AM",
             "show_date": "Today",
             "seats": ["A4", "A5"],
             "tier": "VIP",
             "ticket_count": 2,
-            "total_price": 44.00,
+            "total_price": 640.00,
             "status": "CONFIRMED (DEMO)",
             "is_demo": True,
             "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),

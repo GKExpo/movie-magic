@@ -1,42 +1,51 @@
 {% extends "base.html" %}
 
-{% block title %}Movie Magic — Experience Cinema Redefined{% endblock %}
+{% block title %}Movie Magic — Real Cinema Catalogue & Kolhapur Theatres{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
+<!-- Hero Section featuring High Profile Title -->
 <section class="hero-backdrop">
   <div class="container position-relative">
     <div class="row align-items-center g-4">
       <div class="col-lg-7">
-        <div class="d-flex align-items-center gap-2 mb-3">
-          <span class="badge badge-gold"><i class="bi bi-star-fill me-1"></i> Featured Premiere</span>
-          <span class="badge badge-neon">IMAX 3D / Dolby Atmos</span>
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+          <span class="badge badge-south"><i class="bi bi-fire me-1"></i> South Cinema Blockbuster</span>
+          <span class="badge badge-neon">Telugu • Pan-India Release</span>
+          <span class="badge bg-danger text-light">Kolhapur Premiere</span>
         </div>
-        <h1 class="display-4 fw-extrabold text-white mb-3" style="letter-spacing: -1px;">
-          Cosmic Odyssey: <br><span style="background: linear-gradient(135deg, #a5b4fc, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Beyond the Nebula</span>
+        <h1 class="display-4 fw-extrabold text-white mb-2" style="letter-spacing: -1px;">
+          Pushpa 2: <br><span style="background: linear-gradient(135deg, #fb923c, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">The Rule</span>
         </h1>
-        <p class="lead text-muted mb-4" style="max-width: 600px;">
-          When an anomalous resonance echoes from the edge of the Perseus Arm, an exploratory crew risks everything on an uncharted interstellar voyage.
+        <p class="fs-5 text-white-50 fst-italic mb-3">"పుష్ప 2: ది రూల్ • Directed by Sukumar"</p>
+        <p class="lead text-muted mb-4" style="max-width: 620px; font-size: 1.05rem;">
+          Pushpa Raj expands his syndicate beyond borders, facing off in an unrelenting clash against SP Bhanwar Singh Shekhawat in this historic pan-India spectacle.
         </p>
         <div class="d-flex flex-wrap gap-3 align-items-center">
-          <a href="{{ url_for('booking.select_seats', movie_id='mov-1') }}" class="btn btn-cinematic btn-lg px-4">
-            <i class="bi bi-ticket-perforated-fill me-2"></i> Book Tickets Now
+          <a href="{{ url_for('booking.select_seats', movie_id='mov-south-1', theater_id='th-pvr-dyp', showtime='10:30 AM') }}" class="btn btn-cinematic btn-lg px-4">
+            <i class="bi bi-ticket-perforated-fill me-2"></i> Reserve Kolhapur Show
           </a>
-          <a href="{{ url_for('main.movie_detail', movie_id='mov-1') }}" class="btn btn-outline-cinematic btn-lg px-4">
-            <i class="bi bi-info-circle me-2"></i> View Details
+          <a href="{{ url_for('main.movie_detail', movie_id='mov-south-1') }}" class="btn btn-outline-cinematic btn-lg px-4">
+            <i class="bi bi-info-circle me-2"></i> Film Details & Schedule
           </a>
         </div>
       </div>
 
-      <div class="col-lg-5 d-none d-lg-block">
-        <div class="poster-art shadow-lg mx-auto" style="max-width: 340px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);">
-          <div>
-            <span class="badge bg-warning text-dark fw-bold mb-2">⭐ 8.9 / 10 IMDb</span>
-            <div class="text-white-50 small">Directed by Elena Vance</div>
-          </div>
-          <div>
-            <div class="poster-title text-white">COSMIC ODYSSEY</div>
-            <div class="small text-info mt-1">Sci-Fi • 2h 45m • PG-13</div>
+      <div class="col-lg-5 d-none d-lg-block text-center">
+        <div class="poster-container shadow-lg mx-auto" style="max-width: 300px;">
+          <img src="https://image.tmdb.org/t/p/w500/wzff2A6uE1Gk0dM7pC0e7iR7v8t.jpg"
+               alt="Pushpa 2: The Rule"
+               class="poster-img"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+               loading="lazy">
+          <div class="poster-art" style="background: linear-gradient(135deg, #431407 0%, #7c2d12 50%, #c2410c 100%); display: none; height: 100%;">
+            <div>
+              <span class="badge bg-warning text-dark fw-bold mb-2">⭐ 6.8 IMDb</span>
+              <div class="text-white-50 small">Allu Arjun • Sukumar</div>
+            </div>
+            <div>
+              <div class="poster-title text-white">PUSHPA 2</div>
+              <div class="small text-info mt-1">Telugu • 3h 20m • U/A</div>
+            </div>
           </div>
         </div>
       </div>
@@ -44,78 +53,193 @@
   </div>
 </section>
 
-<!-- Filter & Search Bar -->
+<!-- Filter & Search Bar with Kolhapur as Default -->
 <div class="container">
   <div class="filter-bar">
     <form method="GET" action="{{ url_for('main.index') }}" class="row g-3 align-items-center">
       <!-- Search Input -->
-      <div class="col-md-5">
+      <div class="col-lg-4 col-md-6">
         <div class="input-group">
           <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: rgba(255,255,255,0.12);">
             <i class="bi bi-search"></i>
           </span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-cinematic border-start-0" placeholder="Search movies, actors, directors...">
+          <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-cinematic border-start-0" placeholder="Search title, anime, actor, director...">
         </div>
       </div>
 
-      <!-- City Selector -->
-      <div class="col-md-3">
+      <!-- City Selector (Kolhapur default) -->
+      <div class="col-lg-2 col-md-3 col-6">
         <div class="input-group">
           <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: rgba(255,255,255,0.12);">
-            <i class="bi bi-geo-alt"></i>
+            <i class="bi bi-geo-alt-fill text-danger"></i>
           </span>
           <select name="city" class="form-select form-select-cinematic border-start-0" onchange="this.form.submit()">
-            <option value="All" {% if selected_city == 'All' %}selected{% endif %}>All Cities</option>
             {% for city in cities %}
               <option value="{{ city }}" {% if selected_city == city %}selected{% endif %}>{{ city }}</option>
             {% endfor %}
+            <option value="All" {% if selected_city == 'All' %}selected{% endif %}>All Cities</option>
           </select>
         </div>
       </div>
 
-      <!-- Genre Selector -->
-      <div class="col-md-3">
+      <!-- Category Filter -->
+      <div class="col-lg-2 col-md-3 col-6">
+        <select name="category" class="form-select form-select-cinematic" onchange="this.form.submit()">
+          <option value="All" {% if selected_category == 'All' %}selected{% endif %}>All Categories</option>
+          {% for cat in categories if cat != 'All' %}
+            <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Language Filter -->
+      <div class="col-lg-2 col-md-4 col-6">
+        <select name="language" class="form-select form-select-cinematic" onchange="this.form.submit()">
+          <option value="All" {% if selected_language == 'All' %}selected{% endif %}>All Languages</option>
+          {% for lang in languages if lang != 'All' %}
+            <option value="{{ lang }}" {% if selected_language == lang %}selected{% endif %}>{{ lang }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Genre Filter -->
+      <div class="col-lg-2 col-md-4 col-6">
         <select name="genre" class="form-select form-select-cinematic" onchange="this.form.submit()">
           {% for genre in genres %}
             <option value="{{ genre }}" {% if selected_genre == genre %}selected{% endif %}>{{ genre }}</option>
           {% endfor %}
         </select>
       </div>
-
-      <!-- Submit / Reset -->
-      <div class="col-md-1 d-grid">
-        <button type="submit" class="btn btn-cinematic"><i class="bi bi-arrow-right"></i></button>
-      </div>
     </form>
   </div>
 </div>
 
-<!-- Movie Grid: Now Playing -->
+<!-- Real Kolhapur Cinema Venues Section -->
 <section class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h3 class="fw-bold text-white mb-1">
+        <i class="bi bi-geo-alt-fill text-danger me-2"></i> Cinema Venues in {{ selected_city }}
+      </h3>
+      <p class="text-muted small mb-0">Local theatres with address verification and source listing references</p>
+    </div>
+    <span class="badge badge-neon">{{ theaters|length }} Venues Listed</span>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-3">
+    {% for th in theaters %}
+      <div class="col">
+        <div class="venue-card">
+          <div>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="badge {% if th.is_verified %}badge-verified{% else %}badge-unverified{% endif %}">
+                {% if th.is_verified %}
+                  <i class="bi bi-patch-check-fill me-1"></i> Verified
+                {% else %}
+                  <i class="bi bi-exclamation-triangle-fill me-1"></i> Unverified
+                {% endif %}
+              </span>
+              <span class="badge bg-dark border border-secondary text-dim small">{{ th.venue_type }}</span>
+            </div>
+
+            <h5 class="fw-bold text-white mb-1">{{ th.name }}</h5>
+            <p class="text-muted small mb-2"><i class="bi bi-pin-map me-1 text-danger"></i> {{ th.address }}</p>
+
+            <div class="d-flex flex-wrap gap-1 mb-3">
+              {% if th.screens %}
+                {% for screen in th.screens %}
+                  <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-25" style="font-size: 0.7rem;">
+                    {{ screen }}
+                  </span>
+                {% endfor %}
+              {% else %}
+                <span class="text-dim small fst-italic">No digital screens verified</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+            <span class="small {% if th.operational_status == 'Operational' %}text-success{% else %}text-warning{% endif %} fw-semibold">
+              <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i> {{ th.operational_status }}
+            </span>
+            {% if th.source_url %}
+              <a href="{{ th.source_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-cinematic btn-sm" style="font-size: 0.75rem;">
+                <i class="bi bi-box-arrow-up-right me-1"></i> Source Listing
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="p-2 rounded bg-dark border border-secondary border-opacity-25 small text-muted text-center">
+    <i class="bi bi-info-circle me-1 text-info"></i>
+    <strong>Disclaimer:</strong> Movie Magic is an independent demonstration platform. Not affiliated with BookMyShow, District, PVR, or INOX. Live schedules are operated by the respective theatre managements.
+  </div>
+</section>
+
+<!-- Filter Results or Main Catalogue Grid -->
+<section class="container pb-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h2 class="fw-bold text-white mb-1"><i class="bi bi-play-circle-fill text-primary me-2"></i> Now Showing</h2>
-      <p class="text-muted small mb-0">Experience blockbusters in IMAX, Dolby Vision, and 4DX</p>
+      <h3 class="fw-bold text-white mb-1">
+        <i class="bi bi-collection-play-fill text-primary me-2"></i>
+        {% if search_query or selected_category != 'All' or selected_language != 'All' or selected_genre != 'All' %}
+          Filtered Results ({{ movies|length }})
+        {% else %}
+          Featured Movie Catalogue
+        {% endif %}
+      </h3>
+      <p class="text-muted small mb-0">Browse titles with verified metadata across Anime, Marvel, and South Indian cinema</p>
     </div>
-    <span class="badge badge-neon">{{ movies|length }} Movies Available</span>
+    <a href="{{ url_for('main.movies_catalog') }}" class="btn btn-outline-cinematic btn-sm">
+      View Full Catalogue (28 Titles) <i class="bi bi-arrow-right ms-1"></i>
+    </a>
   </div>
 
   {% if movies %}
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 g-4">
-      {% for movie in movies %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+      {% for movie in movies[:12] %}
         <div class="col">
           <div class="card card-cinematic h-100">
-            <!-- Poster Art Area -->
-            <div class="poster-art" style="background: {{ movie.bg_gradient }};">
-              <div class="d-flex justify-content-between align-items-start">
-                <span class="badge badge-neon">{{ movie.badge }}</span>
+            <!-- Poster with Responsive Image & Fallback -->
+            <div class="poster-container">
+              <div class="poster-overlay-top">
+                <span class="badge {% if movie.category == 'Anime' %}badge-anime{% elif movie.category == 'Marvel' %}badge-marvel{% else %}badge-south{% endif %}">
+                  {{ movie.category }}
+                </span>
                 <span class="badge bg-dark bg-opacity-75 text-warning fw-bold">
-                  <i class="bi bi-star-fill text-warning me-1"></i>{{ movie.imdb_score }}
+                  ⭐ {{ movie.imdb_score }}
                 </span>
               </div>
-              <div>
-                <div class="poster-title text-white">{{ movie.title }}</div>
-                <div class="small text-white-50 mt-1">{{ movie.tagline }}</div>
+
+              {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}"
+                     alt="{{ movie.title }}"
+                     class="poster-img"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                     loading="lazy">
+              {% endif %}
+
+              <div class="poster-art" style="background: {{ movie.bg_gradient }}; {% if movie.poster_url %}display: none;{% endif %} height: 100%;">
+                <div class="pt-4">
+                  <div class="poster-title text-white fs-5">{{ movie.title }}</div>
+                  {% if movie.original_title %}
+                    <div class="small text-white-50 mt-1">{{ movie.original_title }}</div>
+                  {% endif %}
+                </div>
+                <div class="pb-2">
+                  <div class="small text-info">{{ movie.language }} • {{ movie.duration }}</div>
+                </div>
+              </div>
+
+              <div class="poster-overlay-bottom">
+                <div class="text-white fw-bold text-truncate">{{ movie.title }}</div>
+                <div class="d-flex justify-content-between text-dim small">
+                  <span>{{ movie.language }}</span>
+                  <span>{{ movie.release_year }}</span>
+                </div>
               </div>
             </div>
 
@@ -123,11 +247,15 @@
             <div class="p-3 d-flex flex-column flex-grow-1 justify-content-between">
               <div>
                 <div class="d-flex justify-content-between text-dim small mb-2">
-                  <span><i class="bi bi-film me-1"></i> {{ movie.genre }}</span>
                   <span><i class="bi bi-clock me-1"></i> {{ movie.duration }}</span>
                   <span class="badge bg-secondary text-light">{{ movie.rating }}</span>
+                  {% if movie.id in movies_with_shows %}
+                    <span class="badge bg-success bg-opacity-25 text-success" style="font-size: 0.65rem;">Now Showing (Demo)</span>
+                  {% else %}
+                    <span class="badge bg-dark text-muted border border-secondary" style="font-size: 0.65rem;">Catalogue Title</span>
+                  {% endif %}
                 </div>
-                <p class="text-muted small mb-3 text-truncate-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                <p class="text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                   {{ movie.synopsis }}
                 </p>
               </div>
@@ -136,9 +264,15 @@
                 <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="btn btn-outline-cinematic btn-sm flex-fill">
                   Details
                 </a>
-                <a href="{{ url_for('booking.select_seats', movie_id=movie.id) }}" class="btn btn-cinematic btn-sm flex-fill">
-                  <i class="bi bi-ticket me-1"></i> Book
-                </a>
+                {% if movie.id in movies_with_shows %}
+                  <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="btn btn-cinematic btn-sm flex-fill">
+                    <i class="bi bi-ticket-perforated me-1"></i> Shows
+                  </a>
+                {% else %}
+                  <span class="btn btn-outline-secondary btn-sm flex-fill disabled text-dim" title="No live showtimes in Kolhapur currently">
+                    Catalogue
+                  </span>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -149,75 +283,128 @@
     <div class="card-cinematic p-5 text-center my-4">
       <i class="bi bi-film text-muted fs-1 mb-3"></i>
       <h4 class="text-white">No movies match your filters</h4>
-      <p class="text-muted small">Try adjusting your search query, location, or genre filter.</p>
+      <p class="text-muted small">Try selecting "All Categories", "All Languages", or resetting the search query.</p>
       <a href="{{ url_for('main.index') }}" class="btn btn-outline-cinematic btn-sm mx-auto">Reset All Filters</a>
     </div>
   {% endif %}
 </section>
 
-<!-- Cloud Architecture Highlights Section -->
+<!-- Categorized Highlights: Anime, Marvel, South Indian -->
+{% if selected_category == 'All' and not search_query %}
 <section class="container pb-5">
-  <div class="card-cinematic p-4 p-md-5">
-    <div class="row g-4 align-items-center">
-      <div class="col-lg-7">
-        <span class="badge badge-neon mb-2">AWS Cloud Architecture</span>
-        <h3 class="fw-bold text-white mb-2">Built for Cloud Scalability</h3>
-        <p class="text-muted mb-4">
-          Movie Magic is structured for deployment across AWS services. Phase 1 provides the core application foundation, security mechanisms, interactive booking workflows, and testing suite.
-        </p>
-        <div class="row g-3">
-          <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2 text-white">
-              <i class="bi bi-database-check text-info fs-4"></i>
-              <div>
-                <strong class="d-block small">Amazon DynamoDB</strong>
-                <span class="text-dim small">NoSQL for movies, users, and seat state</span>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2 text-white">
-              <i class="bi bi-envelope-check text-warning fs-4"></i>
-              <div>
-                <strong class="d-block small">Amazon SNS</strong>
-                <span class="text-dim small">Instant push & email notifications</span>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2 text-white">
-              <i class="bi bi-cpu text-primary fs-4"></i>
-              <div>
-                <strong class="d-block small">Amazon EC2</strong>
-                <span class="text-dim small">Gunicorn & Nginx production web server</span>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2 text-white">
-              <i class="bi bi-shield-check text-success fs-4"></i>
-              <div>
-                <strong class="d-block small">Security Hardened</strong>
-                <span class="text-dim small">CSRF tokens & Werkzeug password hashing</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-5 text-center">
-        <div class="p-4 rounded bg-dark border border-secondary border-opacity-25">
-          <h6 class="text-info fw-bold mb-3"><i class="bi bi-check-circle me-1"></i> Phase 1 Health Probe</h6>
-          <div class="bg-black p-3 rounded text-start font-monospace small text-success mb-3">
-            GET /health HTTP/1.1<br>
-            200 OK<br>
-            {"status": "healthy", "service": "Movie Magic"}
-          </div>
-          <a href="{{ url_for('main.health_check') }}" target="_blank" class="btn btn-outline-cinematic btn-sm w-100">
-            <i class="bi bi-arrow-up-right-square me-1"></i> Open Health Check API
-          </a>
-        </div>
-      </div>
+  <!-- Anime Carousel / Grid -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h4 class="fw-bold text-white mb-0">
+        <span class="badge badge-anime me-2">Anime</span> Iconic Masterpieces & Premieres
+      </h4>
+      <span class="text-dim small">Makoto Shinkai, Hayao Miyazaki, Ufotable & Toei Classics</span>
     </div>
+    <a href="{{ url_for('main.movies_catalog', category='Anime') }}" class="btn btn-outline-cinematic btn-sm">
+      View All ({{ anime_movies|length }})
+    </a>
+  </div>
+
+  <div class="row row-cols-2 row-cols-md-4 g-3 mb-5">
+    {% for movie in anime_movies[:4] %}
+      <div class="col">
+        <div class="card card-cinematic h-100">
+          <div class="poster-container">
+            {% if movie.poster_url %}
+              <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="poster-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" loading="lazy">
+            {% endif %}
+            <div class="poster-art" style="background: {{ movie.bg_gradient }}; {% if movie.poster_url %}display: none;{% endif %} height: 100%;">
+              <div class="poster-title text-white small">{{ movie.title }}</div>
+            </div>
+            <div class="poster-overlay-bottom">
+              <div class="text-white small fw-bold text-truncate">{{ movie.title }}</div>
+              <div class="text-white-50" style="font-size: 0.7rem;">{{ movie.original_title }}</div>
+            </div>
+          </div>
+          <div class="p-2 d-flex justify-content-between align-items-center">
+            <span class="badge bg-dark text-warning" style="font-size: 0.7rem;">⭐ {{ movie.imdb_score }}</span>
+            <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="btn btn-outline-cinematic btn-sm py-0 px-2" style="font-size: 0.75rem;">Info</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Marvel Universe Grid -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h4 class="fw-bold text-white mb-0">
+        <span class="badge badge-marvel me-2">Marvel</span> The Multiverse & Avengers Saga
+      </h4>
+      <span class="text-dim small">From Infinity War to Across the Spider-Verse</span>
+    </div>
+    <a href="{{ url_for('main.movies_catalog', category='Marvel') }}" class="btn btn-outline-cinematic btn-sm">
+      View All ({{ marvel_movies|length }})
+    </a>
+  </div>
+
+  <div class="row row-cols-2 row-cols-md-4 g-3 mb-5">
+    {% for movie in marvel_movies[:4] %}
+      <div class="col">
+        <div class="card card-cinematic h-100">
+          <div class="poster-container">
+            {% if movie.poster_url %}
+              <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="poster-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" loading="lazy">
+            {% endif %}
+            <div class="poster-art" style="background: {{ movie.bg_gradient }}; {% if movie.poster_url %}display: none;{% endif %} height: 100%;">
+              <div class="poster-title text-white small">{{ movie.title }}</div>
+            </div>
+            <div class="poster-overlay-bottom">
+              <div class="text-white small fw-bold text-truncate">{{ movie.title }}</div>
+              <div class="text-white-50" style="font-size: 0.7rem;">{{ movie.release_year }} • Marvel Studios</div>
+            </div>
+          </div>
+          <div class="p-2 d-flex justify-content-between align-items-center">
+            <span class="badge bg-dark text-warning" style="font-size: 0.7rem;">⭐ {{ movie.imdb_score }}</span>
+            <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="btn btn-outline-cinematic btn-sm py-0 px-2" style="font-size: 0.75rem;">Info</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- South Indian Cinema Grid -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h4 class="fw-bold text-white mb-0">
+        <span class="badge badge-south me-2">South Indian</span> Pan-India Giants & Regional Cinema
+      </h4>
+      <span class="text-dim small">Telugu, Tamil, Malayalam & Kannada Blockbusters</span>
+    </div>
+    <a href="{{ url_for('main.movies_catalog', category='South Indian') }}" class="btn btn-outline-cinematic btn-sm">
+      View All ({{ south_movies|length }})
+    </a>
+  </div>
+
+  <div class="row row-cols-2 row-cols-md-4 g-3">
+    {% for movie in south_movies[:4] %}
+      <div class="col">
+        <div class="card card-cinematic h-100">
+          <div class="poster-container">
+            {% if movie.poster_url %}
+              <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="poster-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" loading="lazy">
+            {% endif %}
+            <div class="poster-art" style="background: {{ movie.bg_gradient }}; {% if movie.poster_url %}display: none;{% endif %} height: 100%;">
+              <div class="poster-title text-white small">{{ movie.title }}</div>
+            </div>
+            <div class="poster-overlay-bottom">
+              <div class="text-white small fw-bold text-truncate">{{ movie.title }}</div>
+              <div class="text-white-50" style="font-size: 0.7rem;">{{ movie.language }} • {{ movie.release_year }}</div>
+            </div>
+          </div>
+          <div class="p-2 d-flex justify-content-between align-items-center">
+            <span class="badge bg-dark text-warning" style="font-size: 0.7rem;">⭐ {{ movie.imdb_score }}</span>
+            <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="btn btn-outline-cinematic btn-sm py-0 px-2" style="font-size: 0.75rem;">Info</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
   </div>
 </section>
+{% endif %}
 {% endblock %}

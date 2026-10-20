@@ -4,6 +4,18 @@
 
 {% block content %}
 <div class="container py-4">
+  <!-- Demo Warning Banner if Unverified / Demo Schedule -->
+  {% if is_demo_showtime %}
+    <div class="alert alert-warning p-3 mb-4 rounded border border-warning border-opacity-50 small">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill fs-5 text-warning flex-shrink-0"></i>
+        <div>
+          <strong>DEMO SHOWTIME NOTICE:</strong> This schedule is a simulated demonstration session for Kolhapur cinema workflows. Real cinema tickets must be confirmed directly with the theatre.
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
   <!-- Booking Header Banner -->
   <div class="card-cinematic p-3 p-md-4 mb-4">
     <div class="row align-items-center g-3">
@@ -53,7 +65,7 @@
                   data-price="{{ seat.price }}"
                   data-tier="{{ seat.tier }}"
                   {% if seat.is_booked %}disabled aria-disabled="true" title="Seat {{ seat.id }} (Already Booked)"
-                  {% else %}aria-checked="false" title="Seat {{ seat.id }} ({{ seat.tier }} - ${{ '%.2f'|format(seat.price) }})"{% endif %}
+                  {% else %}aria-checked="false" title="Seat {{ seat.id }} ({{ seat.tier }} - ₹{{ '%.2f'|format(seat.price) }})"{% endif %}
                 >
                   {{ seat.number }}
                 </button>
@@ -79,13 +91,13 @@
             <span>Occupied</span>
           </div>
           <div class="legend-item">
-            <span class="badge bg-warning text-dark">VIP ($22.00)</span>
+            <span class="badge bg-warning text-dark">VIP (₹320.00)</span>
           </div>
           <div class="legend-item">
-            <span class="badge bg-primary">Gold ($16.00)</span>
+            <span class="badge bg-primary">Gold (₹220.00)</span>
           </div>
           <div class="legend-item">
-            <span class="badge bg-secondary">Silver ($12.00)</span>
+            <span class="badge bg-secondary">Silver (₹160.00)</span>
           </div>
         </div>
       </div>
@@ -125,9 +137,9 @@
         <div class="p-3 rounded bg-primary bg-opacity-10 border border-primary border-opacity-25 mb-4">
           <div class="d-flex justify-content-between align-items-center">
             <span class="fw-bold text-light">Total Amount:</span>
-            <span class="fs-4 fw-extrabold text-warning" id="total-price-display">$0.00</span>
+            <span class="fs-4 fw-extrabold text-warning" id="total-price-display">₹0.00</span>
           </div>
-          <div class="text-dim small mt-1">Includes all taxes and cinema fees</div>
+          <div class="text-dim small mt-1">Includes all cinema taxes and convenience fees</div>
         </div>
 
         <!-- Booking Form with CSRF Protection -->

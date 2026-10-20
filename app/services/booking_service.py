@@ -23,7 +23,7 @@ class BookingService:
         for row_letter in TOTAL_ROWS:
             # Determine tier for this row
             row_tier = "Silver"
-            price = 12.00
+            price = SEAT_TIERS.get("Silver", {}).get("price", 160.00)
             for tier_name, tier_info in SEAT_TIERS.items():
                 if row_letter in tier_info["rows"]:
                     row_tier = tier_name
@@ -67,7 +67,7 @@ class BookingService:
         tiers_used = set()
         for seat in seats:
             row_letter = seat[0].upper()
-            seat_price = 12.00  # Default
+            seat_price = SEAT_TIERS.get("Silver", {}).get("price", 160.00)
             for tier_name, tier_info in SEAT_TIERS.items():
                 if row_letter in tier_info["rows"]:
                     seat_price = tier_info["price"]

@@ -1,7 +1,6 @@
 """Main Blueprint: Home, catalog, movie details, search, and health check."""
 from flask import Blueprint, render_template, request, jsonify, current_app
 from app.services import movie_service
-import os
 
 main_bp = Blueprint("main", __name__)
 
@@ -14,73 +13,130 @@ def health_check():
     return jsonify({
         "status": "healthy",
         "service": "Movie Magic",
-        "version": "1.0.0-phase1",
+        "version": "1.5.0-curated-catalogue",
         "environment": current_app.config.get("ENV", "development"),
+        "default_city": "Kolhapur",
         "aws_mode": "mock/demo" if current_app.config.get("USE_AWS_MOCK") else "live",
     }), 200
 
 
 @main_bp.route("/", methods=["GET"])
 def index():
-    """Home landing page featuring hero carousel, trending movies, and location filter."""
-    selected_city = request.args.get("city", "All")
+    """Home landing page featuring hero showcase, categories, and Kolhapur cinemas."""
+    selected_city = request.args.get("city", "Kolhapur")
+    selected_category = request.args.get("category", "All")
+    selected_language = request.args.get("language", "All")
     selected_genre = request.args.get("genre", "All")
     search_query = request.args.get("q", "").strip()
 
     featured_movies = movie_service.get_featured_movies()
-    all_movies = movie_service.list_movies(city=selected_city, genre=selected_genre, search_query=search_query)
+    all_movies = movie_service.list_movies(
+        city=selected_city,
+        genre=selected_genre,
+        category=selected_category,
+        language=selected_language,
+        search_query=search_query,
+    )
+
+    anime_movies = movie_service.get_movies_by_category("Anime")
+    marvel_movies = movie_service.get_movies_by_category("Marvel")
+    south_movies = movie_service.get_movies_by_category("South Indian")
+
+    theaters = movie_service.get_theaters(city=selected_city)
     cities = movie_service.get_available_cities()
+    categories = movie_service.get_available_categories()
+    languages = movie_service.get_available_languages()
     genres = movie_service.get_available_genres()
+
+    # Get all showtimes for badges
+    all_showtimes = movie_service.get_showtimes()
+    movies_with_shows = {s.get("movie_id") for s in all_showtimes}
 
     return render_template(
         "main/index.html",
         featured_movies=featured_movies,
         movies=all_movies,
+        anime_movies=anime_movies,
+        marvel_movies=marvel_movies,
+        south_movies=south_movies,
+        theaters=theaters,
         cities=cities,
+        categories=categories,
+        languages=languages,
         genres=genres,
         selected_city=selected_city,
+        selected_category=selected_category,
+        selected_language=selected_language,
         selected_genre=selected_genre,
         search_query=search_query,
+        movies_with_shows=movies_with_shows,
     )
 
 
 @main_bp.route("/movies", methods=["GET"])
 def movies_catalog():
-    """Browse movies with search and filters."""
-    selected_city = request.args.get("city", "All")
+    """Browse curated movie catalog with search and multifaceted filters."""
+    selected_city = request.args.get("city", "Kolhapur")
+    selected_category = request.args.get("category", "All")
+    selected_language = request.args.get("language", "All")
     selected_genre = request.args.get("genre", "All")
     search_query = request.args.get("q", "").strip()
 
-    movies = movie_service.list_movies(city=selected_city, genre=selected_genre, search_query=search_query)
+    movies = movie_service.list_movies(
+        city=selected_city,
+        genre=selected_genre,
+        category=selected_category,
+        language=selected_language,
+        search_query=search_query,
+    )
     cities = movie_service.get_available_cities()
+    categories = movie_service.get_available_categories()
+    languages = movie_service.get_available_languages()
     genres = movie_service.get_available_genres()
+
+    # Track which movies currently have showtimes scheduled
+    all_showtimes = movie_service.get_showtimes()
+    movies_with_shows = {s.get("movie_id") for s in all_showtimes}
 
     return render_template(
         "main/movies.html",
         movies=movies,
         cities=cities,
+        categories=categories,
+        languages=languages,
         genres=genres,
         selected_city=selected_city,
+        selected_category=selected_category,
+        selected_language=selected_language,
         selected_genre=selected_genre,
         search_query=search_query,
+        movies_with_shows=movies_with_shows,
     )
 
 
 @main_bp.route("/movies/<movie_id>", methods=["GET"])
 def movie_detail(movie_id):
-    """Movie details page with synopsis, cast, ratings, and theater showtimes."""
+    """Movie details page showing verified metadata, showtimes, or cinema referral links."""
     movie = movie_service.get_movie_by_id(movie_id)
     if not movie:
         return render_template("errors/404.html", message="Movie not found"), 404
 
-    selected_city = request.args.get("city", "New York")
+    selected_city = request.args.get("city", "Kolhapur")
     theaters = movie_service.get_theaters(city=selected_city)
     cities = movie_service.get_available_cities()
+
+    # Fetch showtimes specifically scheduled for this movie
+    movie_showtimes = movie_service.get_showtimes(movie_id=movie_id)
+
+    # Filter showtimes by selected city
+    city_theater_ids = {t["id"] for t in theaters}
+    city_showtimes = [s for s in movie_showtimes if s.get("theater_id") in city_theater_ids]
 
     return render_template(
         "main/movie_detail.html",
         movie=movie,
         theaters=theaters,
+        showtimes=city_showtimes,
         cities=cities,
         selected_city=selected_city,
     )

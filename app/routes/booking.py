@@ -15,13 +15,32 @@ def select_seats(movie_id):
     if not movie:
         abort(404)
 
-    theater_id = request.args.get("theater_id", "th-1")
+    theater_id = request.args.get("theater_id", "th-pvr-dyp")
     showtime = request.args.get("showtime", "10:30 AM")
     show_date = request.args.get("date", "Today")
 
     theater = movie_service.get_theater_by_id(theater_id)
     if not theater:
-        theater = {"id": theater_id, "name": "Starlight IMAX & Laser", "city": "New York"}
+        theater = {
+            "id": theater_id,
+            "name": "PVR DYP City Mall",
+            "city": "Kolhapur",
+            "operational_status": "Operational",
+            "is_verified": True,
+        }
+
+    # Guard: prevent reservations for unverified or non-operational venues
+    if theater.get("operational_status") != "Operational" or not theater.get("is_verified", True):
+        flash(
+            f"'{theater.get('name')}' is currently unverified or not active for online ticket reservations.",
+            "warning",
+        )
+        return redirect(url_for("main.movie_detail", movie_id=movie_id))
+
+    # Identify if the requested showtime is verified or a demo schedule
+    matching_shows = movie_service.get_showtimes(movie_id=movie_id, theater_id=theater_id)
+    active_show = next((s for s in matching_shows if s.get("time") == showtime), None)
+    is_demo_showtime = True if (not active_show or not active_show.get("is_verified")) else False
 
     seat_layout = booking_service.get_seat_layout(movie_id, theater_id, showtime)
 
@@ -39,6 +58,8 @@ def select_seats(movie_id):
         showtime=showtime,
         show_date=show_date,
         seat_layout=seat_layout,
+        is_demo_showtime=is_demo_showtime,
+        active_show=active_show,
         form=form,
     )
 
@@ -59,6 +80,12 @@ def confirm_booking():
     showtime = form.showtime.data
     show_date = form.show_date.data
     raw_seats = form.selected_seats.data
+
+    # Guard against unverified or closed theaters on submission
+    theater = movie_service.get_theater_by_id(theater_id)
+    if theater and (theater.get("operational_status") != "Operational" or not theater.get("is_verified", True)):
+        flash(f"Bookings cannot be processed for unverified or closed venue '{theater.get('name')}'.", "danger")
+        return redirect(url_for("main.movie_detail", movie_id=movie_id))
 
     try:
         if raw_seats.startswith("["):
