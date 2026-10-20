@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie.title }} — Movie Magic{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}" class="text-info text-decoration-none">Home</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('main.movies_catalog') }}" class="text-info text-decoration-none">Movies</a></li>
+      <li class="breadcrumb-item active text-muted" aria-current="page">{{ movie.title }}</li>
+    </ol>
+  </nav>
+
+  <!-- Movie Header Banner -->
+  <div class="card-cinematic p-4 p-md-5 mb-4 position-relative overflow-hidden" style="background: {{ movie.bg_gradient }};">
+    <div class="row align-items-center g-4">
+      <div class="col-md-4 col-lg-3">
+        <div class="poster-art shadow-lg" style="background: rgba(0,0,0,0.5);">
+          <span class="badge badge-neon align-self-start">{{ movie.badge }}</span>
+          <div>
+            <div class="poster-title text-white fs-4">{{ movie.title }}</div>
+            <div class="text-warning small mt-2">⭐ {{ movie.imdb_score }} / 10 IMDb</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-8 col-lg-9">
+        <div class="d-flex flex-wrap gap-2 mb-2">
+          <span class="badge bg-primary">{{ movie.genre }}</span>
+          <span class="badge bg-secondary">{{ movie.rating }}</span>
+          <span class="badge bg-dark border border-secondary text-light">{{ movie.duration }}</span>
+          <span class="badge bg-info text-dark fw-bold">{{ movie.format }}</span>
+        </div>
+
+        <h1 class="display-5 fw-bold text-white mb-2">{{ movie.title }}</h1>
+        <p class="fs-5 text-white-50 fst-italic mb-3">"{{ movie.tagline }}"</p>
+        
+        <p class="lead text-light mb-4" style="max-width: 800px; font-size: 1rem; line-height: 1.6;">
+          {{ movie.synopsis }}
+        </p>
+
+        <div class="row g-3 text-white-50 small">
+          <div class="col-sm-6">
+            <strong class="text-white">Director:</strong> {{ movie.director }}
+          </div>
+          <div class="col-sm-6">
+            <strong class="text-white">Release Year:</strong> {{ movie.release_year }}
+          </div>
+          <div class="col-12">
+            <strong class="text-white">Cast:</strong> {{ movie.cast|join(', ') }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Showtimes & Theater Selection -->
+  <div class="card-cinematic p-4 mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+      <div>
+        <h3 class="fw-bold text-white mb-1"><i class="bi bi-clock-history text-info me-2"></i> Select Showtime & Theater</h3>
+        <p class="text-muted small mb-0">Choose your preferred screening time to reserve seats</p>
+      </div>
+
+      <!-- City Switcher -->
+      <form method="GET" action="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="d-flex align-items-center gap-2">
+        <label class="text-muted small fw-semibold">City:</label>
+        <select name="city" class="form-select form-select-cinematic form-select-sm" onchange="this.form.submit()">
+          {% for city in cities %}
+            <option value="{{ city }}" {% if selected_city == city %}selected{% endif %}>{{ city }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+
+    <!-- Theaters List -->
+    {% if theaters %}
+      <div class="d-flex flex-column gap-3">
+        {% for theater in theaters %}
+          <div class="p-3 rounded bg-dark border border-secondary border-opacity-50">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+              <div>
+                <h5 class="text-white fw-bold mb-0">
+                  <i class="bi bi-building text-primary me-2"></i>{{ theater.name }}
+                </h5>
+                <span class="text-dim small">{{ theater.city }} • Screens: {{ theater.screens|join(', ') }}</span>
+              </div>
+              <span class="badge bg-dark text-muted border border-secondary">Dolby Atmos / 4K Laser</span>
+            </div>
+
+            <!-- Showtimes Pills -->
+            <div class="d-flex flex-wrap gap-2">
+              {% for slot in movie.showtimes %}
+                <a href="{{ url_for('booking.select_seats', movie_id=movie.id, theater_id=theater.id, showtime=slot.time) }}" 
+                   class="btn btn-outline-cinematic btn-sm d-flex flex-column align-items-center px-3 py-2">
+                  <span class="fw-bold text-white">{{ slot.time }}</span>
+                  <span class="text-info small" style="font-size: 0.7rem;">{{ slot.format }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-muted">No theaters currently scheduled in {{ selected_city }}.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
