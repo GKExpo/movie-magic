@@ -1,5 +1,5 @@
 """Authentication Blueprint: Sign in, Register, Sign out."""
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
 from app.forms import LoginForm, RegisterForm
 from app.services import auth_service
 
@@ -34,7 +34,12 @@ def login():
         else:
             flash(message, "danger")
 
-    return render_template("auth/login.html", form=form, next=next_url)
+    return render_template(
+        "auth/login.html",
+        form=form,
+        next=next_url,
+        show_demo_credentials=current_app.config.get("SHOW_DEMO_CREDENTIALS", False),
+    )
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])

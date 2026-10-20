@@ -8,25 +8,29 @@
     <div class="col-md-8 col-lg-5">
       <div class="card-cinematic p-4 p-md-5">
         <div class="text-center mb-4">
-          <span class="brand-icon d-inline-block mb-3 fs-3"><i class="bi bi-person-fill-lock"></i></span>
+          <div class="brand-icon d-inline-flex align-items-center justify-content-center mb-3 fs-3" style="width: 56px; height: 56px; border-radius: 16px;">
+            <i class="bi bi-person-fill-lock"></i>
+          </div>
           <h2 class="fw-bold text-white mb-1">Welcome Back</h2>
-          <p class="text-muted small">Access your bookings and reserve prime seats</p>
+          <p class="text-muted small mb-0">Access your bookings and reserve prime cinema seats</p>
         </div>
 
-        <!-- Quick Demo Credentials Box -->
-        <div class="p-3 mb-4 rounded bg-dark border border-secondary border-opacity-50 small">
-          <div class="fw-semibold text-warning mb-2 d-flex align-items-center gap-1">
-            <i class="bi bi-key-fill"></i> Demo Credentials (Quick Fill)
+        {% if show_demo_credentials %}
+        <!-- Demo Credentials Helper (Evaluation / Academic Demo Mode Only) -->
+        <div class="p-3 mb-4 rounded border small" style="background: rgba(245, 158, 11, 0.06); border-color: rgba(245, 158, 11, 0.28) !important;">
+          <div class="fw-semibold text-warning mb-1 d-flex align-items-center gap-2">
+            <i class="bi bi-info-circle-fill"></i> Public Demo Credentials
           </div>
+          <p class="text-dim small mb-2" style="font-size: 0.8rem;">
+            Seeded non-sensitive test account for evaluation and demonstration purposes.
+          </p>
           <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-sm btn-outline-info" onclick="fillCredentials('demo@moviemagic.com', 'Demo@123')">
-              <i class="bi bi-person me-1"></i> Demo User
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-warning" onclick="fillCredentials('admin@moviemagic.com', 'Admin@123')">
-              <i class="bi bi-shield-lock me-1"></i> Admin User
+            <button type="button" class="btn btn-sm btn-outline-info" onclick="fillDemoCredentials()">
+              <i class="bi bi-person me-1"></i> Quick Fill Demo User
             </button>
           </div>
         </div>
+        {% endif %}
 
         <form method="POST" action="{{ url_for('auth.login') }}" novalidate>
           {{ form.hidden_tag() }}
@@ -35,20 +39,20 @@
           {% endif %}
 
           <div class="mb-3">
-            <label class="form-label text-muted small fw-semibold" for="email">
-              <i class="bi bi-envelope me-1"></i> Email Address
+            <label class="form-label text-light small fw-semibold" for="email">
+              <i class="bi bi-envelope me-1 text-primary"></i> Email Address
             </label>
-            {{ form.email(class="form-control form-control-cinematic" + (" is-invalid" if form.email.errors else "")) }}
+            {{ form.email(class="form-control form-control-cinematic" + (" is-invalid" if form.email.errors else ""), placeholder="name@example.com") }}
             {% for error in form.email.errors %}
               <div class="invalid-feedback">{{ error }}</div>
             {% endfor %}
           </div>
 
           <div class="mb-3">
-            <label class="form-label text-muted small fw-semibold" for="password">
-              <i class="bi bi-lock me-1"></i> Password
+            <label class="form-label text-light small fw-semibold" for="password">
+              <i class="bi bi-lock me-1 text-primary"></i> Password
             </label>
-            {{ form.password(class="form-control form-control-cinematic" + (" is-invalid" if form.password.errors else "")) }}
+            {{ form.password(class="form-control form-control-cinematic" + (" is-invalid" if form.password.errors else ""), placeholder="••••••••") }}
             {% for error in form.password.errors %}
               <div class="invalid-feedback">{{ error }}</div>
             {% endfor %}
@@ -61,11 +65,11 @@
                 Remember me
               </label>
             </div>
-            <span class="text-dim small">Secure Session (HTTPS/Lax)</span>
+            <span class="text-dim small"><i class="bi bi-shield-check me-1 text-success"></i>Secure Session</span>
           </div>
 
           <div class="d-grid mb-4">
-            {{ form.submit(class="btn btn-cinematic py-2") }}
+            {{ form.submit(class="btn btn-cinematic py-2 fw-bold") }}
           </div>
 
           <div class="text-center text-muted small">
@@ -80,10 +84,12 @@
 {% endblock %}
 
 {% block extra_js %}
+{% if show_demo_credentials %}
 <script>
-function fillCredentials(email, pwd) {
-  document.getElementById("email").value = email;
-  document.getElementById("password").value = pwd;
+function fillDemoCredentials() {
+  document.getElementById("email").value = "demo@moviemagic.com";
+  document.getElementById("password").value = "Demo@123";
 }
 </script>
+{% endif %}
 {% endblock %}

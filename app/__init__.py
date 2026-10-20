@@ -16,6 +16,10 @@ def create_app(config_name: str = None) -> Flask:
     config_class = config_by_name.get(config_name, config_by_name["default"])
     app.config.from_object(config_class)
 
+    # Runtime environment override for demo credentials helper
+    if "SHOW_DEMO_CREDENTIALS" in os.environ:
+        app.config["SHOW_DEMO_CREDENTIALS"] = os.environ["SHOW_DEMO_CREDENTIALS"].lower() in ("true", "1", "yes")
+
     # Initialize extensions
     csrf.init_app(app)
 
@@ -37,6 +41,7 @@ def create_app(config_name: str = None) -> Flask:
             "current_user_role": session.get("user_role"),
             "is_admin": session.get("user_role") == "admin",
             "is_demo_mode": app.config.get("USE_AWS_MOCK", True),
+            "show_demo_credentials": app.config.get("SHOW_DEMO_CREDENTIALS", False),
         }
 
     # Custom Error Handlers

@@ -110,3 +110,33 @@ def test_logout(auth_client):
     assert response.status_code == 200
     with auth_client.session_transaction() as sess:
         assert sess.get("user_id") is None
+
+
+def test_login_page_renders_demo_credentials_when_enabled(client):
+    """Verify demo-user quick-fill renders when SHOW_DEMO_CREDENTIALS is enabled."""
+    response = client.get("/auth/login")
+    assert response.status_code == 200
+    html = response.data.decode("utf-8")
+    assert "Public Demo Credentials" in html
+    assert "Quick Fill Demo User" in html
+    assert "demo@moviemagic.com" in html
+    # Ensure admin credentials are NEVER exposed in frontend HTML or JS
+    assert "admin@moviemagic.com" not in html
+    assert "Admin@123" not in html
+
+
+def test_login_page_hides_demo_credentials_when_disabled(app, client):
+    """Verify demo credential helpers are completely omitted from DOM when disabled."""
+    app.config["SHOW_DEMO_CREDENTIALS"] = False
+    try:
+        response = client.get("/auth/login")
+        assert response.status_code == 200
+        html = response.data.decode("utf-8")
+        assert "Public Demo Credentials" not in html
+        assert "Quick Fill Demo User" not in html
+        assert "fillDemoCredentials" not in html
+        assert "demo@moviemagic.com" not in html
+        assert "admin@moviemagic.com" not in html
+        assert "Admin@123" not in html
+    finally:
+        app.config["SHOW_DEMO_CREDENTIALS"] = True

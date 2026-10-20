@@ -33,12 +33,16 @@ class Config:
     SNS_BOOKING_TOPIC_ARN = os.environ.get("SNS_BOOKING_TOPIC_ARN", "")
     USE_AWS_MOCK = os.environ.get("USE_AWS_MOCK", "True").lower() in ("true", "1", "yes")
 
+    # Demo Credentials Visibility (for academic evaluation vs production hardening)
+    SHOW_DEMO_CREDENTIALS = os.environ.get("SHOW_DEMO_CREDENTIALS", "True").lower() in ("true", "1", "yes")
+
 
 class DevelopmentConfig(Config):
     """Development environment configuration."""
     DEBUG = True
     TESTING = False
     USE_AWS_MOCK = os.environ.get("USE_AWS_MOCK", "True").lower() in ("true", "1", "yes")
+    SHOW_DEMO_CREDENTIALS = os.environ.get("SHOW_DEMO_CREDENTIALS", "True").lower() in ("true", "1", "yes")
 
 
 class TestingConfig(Config):
@@ -48,6 +52,7 @@ class TestingConfig(Config):
     WTF_CSRF_ENABLED = False  # Disabled for unit tests to simplify form testing
     SECRET_KEY = "testing-secret-key-12345"
     USE_AWS_MOCK = True
+    SHOW_DEMO_CREDENTIALS = os.environ.get("SHOW_DEMO_CREDENTIALS", "True").lower() in ("true", "1", "yes")
 
 
 class ProductionConfig(Config):
@@ -56,6 +61,7 @@ class ProductionConfig(Config):
     TESTING = False
     SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE", "False").lower() in ("true", "1", "yes")
     USE_AWS_MOCK = os.environ.get("USE_AWS_MOCK", "False").lower() in ("true", "1", "yes")
+    SHOW_DEMO_CREDENTIALS = os.environ.get("SHOW_DEMO_CREDENTIALS", "False").lower() in ("true", "1", "yes")
 
     @classmethod
     def init_app(cls, app):

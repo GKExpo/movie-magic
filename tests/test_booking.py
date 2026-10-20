@@ -81,6 +81,13 @@ def test_authenticated_user_booking_flow(auth_client):
     assert b"B1" in response.data
     assert b"B2" in response.data
 
+    # Verify simulated QR code disclaimer and non-scannable demo caption
+    html = response.data.decode("utf-8")
+    assert "Demo QR — not scannable" in html
+    assert "Decorative graphic only" in html
+    assert "Not a valid ticket barcode" in html
+    assert "Scan at Turnstile" not in html
+
 
 def test_duplicate_seat_booking_prevention(auth_client):
     """Attempting to book an already occupied seat should be rejected."""
