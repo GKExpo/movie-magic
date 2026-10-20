@@ -21,10 +21,17 @@ SEAT_CODE_REGEX = re.compile(r"^[A-H](?:[1-9]|10)$")
 class BookingService:
     """Business logic for reservations, seat map generation, and booking receipts."""
 
-    def __init__(self, repo=None, movie_repo=None):
+    def __init__(self, repo=None, movie_repo=None, sns_service=None):
         self._repo = repo
         self._movie_repo = movie_repo
-        self.sns_service = SNSService()
+        self._sns_service = sns_service
+
+    @property
+    def sns_service(self):
+        """Active SNS notification service adapter."""
+        if self._sns_service is not None:
+            return self._sns_service
+        return SNSService()
 
     @property
     def repo(self):
@@ -163,11 +170,6 @@ class BookingService:
                 tier=tier,
                 total_price=total_price,
             )
-
-            # Trigger SNS notification integration point
-            self.sns_service.publish_booking_confirmation(booking)
-
-            return True, "Booking confirmed successfully!", booking
         except DuplicateSeatError as e:
             logger.warning("Seat collision detected: %s", e)
             return False, str(e), None
@@ -179,6 +181,23 @@ class BookingService:
         except Exception as e:
             logger.error("Unexpected error during booking creation: %s", type(e).__name__)
             return False, "Unable to complete reservation at this time. Please try again.", None
+
+        # Isolated SNS dispatch: notification failures must NEVER invalidate a completed reservation
+        try:
+            notification_sent = self.sns_service.publish_booking_confirmation(booking)
+            if not notification_sent:
+                logger.warning(
+                    "SNS notification not delivered for booking %s. Reservation remains confirmed.",
+                    booking.get("id") or booking.get("booking_id"),
+                )
+        except Exception as sns_err:
+            logger.error(
+                "Unexpected exception in SNS notification dispatch for booking %s: %s",
+                booking.get("id") or booking.get("booking_id"),
+                sns_err,
+            )
+
+        return True, "Booking confirmed successfully!", booking
 
     def get_booking(self, booking_id: str) -> Optional[Dict[str, Any]]:
         return self.repo.get_by_id(booking_id)

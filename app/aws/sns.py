@@ -12,10 +12,29 @@ logger = logging.getLogger(__name__)
 class SNSService:
     """SNS Service adapter for dispatching booking confirmation notifications."""
 
-    def __init__(self, topic_arn: Optional[str] = None):
-        self.topic_arn = topic_arn or os.environ.get("SNS_BOOKING_TOPIC_ARN", "")
-        self._client = get_boto3_client("sns")
-        self.is_connected = self._client is not None and bool(self.topic_arn)
+    def __init__(self, topic_arn: Optional[str] = None, client: Optional[Any] = None):
+        self._topic_arn = topic_arn
+        self._client = client
+
+    @property
+    def topic_arn(self) -> str:
+        if self._topic_arn is not None:
+            return self._topic_arn
+        return os.environ.get("SNS_BOOKING_TOPIC_ARN", "").strip()
+
+    @topic_arn.setter
+    def topic_arn(self, value: str):
+        self._topic_arn = value
+
+    @property
+    def client(self):
+        if self._client is not None:
+            return self._client
+        return get_boto3_client("sns")
+
+    @property
+    def is_connected(self) -> bool:
+        return self.client is not None and bool(self.topic_arn)
 
     def publish_booking_confirmation(self, booking_details: Dict[str, Any]) -> bool:
         """Publish booking confirmation message to SNS topic."""
@@ -37,7 +56,7 @@ class SNSService:
             return True
 
         try:
-            self._client.publish(
+            self.client.publish(
                 TopicArn=self.topic_arn,
                 Subject=f"Movie Magic Booking Confirmed #{booking_id}",
                 Message=message

@@ -26,6 +26,10 @@ dnf install -y -q ${PYTHON_BIN} ${PYTHON_BIN}-pip git nginx
 if [ ! -d "${APP_DIR}" ]; then
     echo "📥 Cloning repository from GitHub..."
     git clone https://github.com/GKExpo/movie-magic.git "${APP_DIR}"
+else
+    echo "🔄 Existing repository found; pulling latest updates..."
+    cd "${APP_DIR}"
+    sudo -u ${APP_USER} git pull origin main || true
 fi
 
 cd "${APP_DIR}"
@@ -74,6 +78,8 @@ USE_AWS_MOCK=False
 SNS_BOOKING_TOPIC_ARN=
 EOF
     chmod 600 "${APP_DIR}/.env"
+else
+    echo "ℹ️ Existing .env file found at ${APP_DIR}/.env. Preserving existing SECRET_KEY and configuration."
 fi
 
 # 6. Install and configure systemd service

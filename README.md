@@ -112,7 +112,7 @@ Phase 1.5 upgrades Movie Magic from generic placeholder data to a curated, verif
 | **Database** | Amazon DynamoDB (`ap-south-1` Mumbai, on-demand PAY_PER_REQUEST, with mock fallback) |
 | **Messaging** | Amazon SNS (Booking confirmation notifications with mock fallback) |
 | **Hosting & Web Server** | Amazon EC2, Gunicorn (WSGI), Nginx reverse proxy |
-| **Testing** | Pytest 8+ (126 automated tests) |
+| **Testing** | Pytest 8+ (139 automated tests) |
 
 ---
 
@@ -149,11 +149,11 @@ TMDB_API_KEY=your_free_tmdb_api_key_here
 *Note: Movie Magic functions out of the box without any third-party API key.*
 
 ### 5. Run the Automated Test Suite
-Execute pytest to run the complete 126-test suite:
+Execute pytest to run the complete 139-test suite:
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
 ```
-*Expected result: 126 passed in < 3.5 seconds.*
+*Expected result: 139 passed in < 3.5 seconds.*
 
 ### 6. Inspect DynamoDB Table Schemas & Catalogue Seeder (Dry-Run)
 Inspect table schemas and catalogue seeding data safely in read-only mode:

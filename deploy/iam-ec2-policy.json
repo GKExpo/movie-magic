@@ -12,7 +12,8 @@
         "dynamodb:Query",
         "dynamodb:Scan",
         "dynamodb:BatchWriteItem",
-        "dynamodb:ConditionCheckItem"
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:TransactWriteItems"
       ],
       "Resource": [
         "arn:aws:dynamodb:ap-south-1:*:table/moviemagic_users",
