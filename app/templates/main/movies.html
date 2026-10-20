@@ -120,7 +120,11 @@
                 <div class="d-flex justify-content-between text-secondary small mb-2 align-items-center">
                   <span><i class="bi bi-clock me-1 text-info"></i> {{ movie.duration }}</span>
                   <span class="badge bg-secondary text-light">{{ movie.rating }}</span>
-                  <span class="badge bg-dark text-secondary border border-secondary" style="font-size: 0.7rem;">{{ movie.genre }}</span>
+                  {% if movie.id in movies_with_shows %}
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25" style="font-size: 0.7rem;">Now Showing (Demo)</span>
+                  {% else %}
+                    <span class="badge bg-dark text-secondary border border-secondary" style="font-size: 0.7rem;">Catalogue Title</span>
+                  {% endif %}
                 </div>
                 <p class="text-secondary small mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5;">
                   {{ movie.synopsis }}
@@ -131,9 +135,15 @@
                 <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="btn btn-outline-cinematic btn-sm flex-fill">
                   Details
                 </a>
-                <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="btn btn-cinematic btn-sm flex-fill">
-                  <i class="bi bi-ticket-perforated me-1"></i> Shows
-                </a>
+                {% if movie.id in movies_with_shows %}
+                  <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="btn btn-cinematic btn-sm flex-fill">
+                    <i class="bi bi-ticket-perforated me-1"></i> Shows
+                  </a>
+                {% else %}
+                  <span class="btn btn-disabled-action btn-sm flex-fill" aria-disabled="true" title="No live showtimes currently scheduled">
+                    <i class="bi bi-calendar-x me-1"></i> Unavailable
+                  </span>
+                {% endif %}
               </div>
             </div>
           </div>

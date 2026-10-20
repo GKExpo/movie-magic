@@ -137,3 +137,50 @@ def test_movie_detail_not_found(client):
     response = client.get("/movies/mov-nonexistent-999")
     assert response.status_code == 404
     assert b"404" in response.data
+
+
+def test_homepage_hero_is_brand_centric_not_movie_specific(client):
+    """Verify homepage renders Movie Magic brand-centric hero and not Pushpa 2 dominant hero."""
+    response = client.get("/")
+    assert response.status_code == 200
+    html = response.data.decode("utf-8")
+
+    # Assert brand-centric hero elements are present
+    assert "Experience the Magic of" in html
+    assert "Big-Screen Cinema" in html
+    assert "Explore Movies" in html
+    assert "Find Showtimes" in html
+    assert "Kolhapur Cinema Hub" in html
+
+    # Extract hero section specifically
+    hero_section = html.split('<section class="hero-backdrop">')[1].split("</section>")[0]
+    assert "Pushpa 2" not in hero_section
+    assert "Sukumar" not in hero_section
+    assert "Reserve Kolhapur Show" not in hero_section
+
+    # Ensure Pushpa 2 remains in the catalogue grid on the page
+    assert "Pushpa 2: The Rule" in html
+
+
+def test_movie_cards_secondary_actions_for_available_and_unavailable_showtimes(client):
+    """Verify movie cards render Shows when showtimes exist and high-contrast Unavailable when not."""
+    # 1. Full catalogue page /movies
+    response_catalog = client.get("/movies")
+    assert response_catalog.status_code == 200
+    html_catalog = response_catalog.data.decode("utf-8")
+
+    assert "Shows" in html_catalog
+    assert "Unavailable" in html_catalog
+    assert "btn-disabled-action" in html_catalog
+    # Old low-contrast button text is replaced
+    assert ">Catalogue<" not in html_catalog
+
+    # 2. Homepage /
+    response_home = client.get("/")
+    assert response_home.status_code == 200
+    html_home = response_home.data.decode("utf-8")
+
+    assert "Shows" in html_home
+    assert "Unavailable" in html_home
+    assert "btn-disabled-action" in html_home
+    assert ">Catalogue<" not in html_home

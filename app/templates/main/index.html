@@ -3,63 +3,86 @@
 {% block title %}Movie Magic — Real Cinema Catalogue & Kolhapur Theatres{% endblock %}
 
 {% block content %}
-<!-- Hero Section featuring High Profile Title -->
+<!-- Movie Magic Welcome Hero Section -->
 <section class="hero-backdrop">
   <div class="container position-relative">
     <div class="row align-items-center g-4 g-lg-5">
       <div class="col-lg-7">
         <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-          <span class="badge badge-south"><i class="bi bi-fire me-1"></i> South Cinema Blockbuster</span>
-          <span class="badge badge-neon">Telugu • Pan-India Release</span>
-          <span class="badge bg-danger text-light px-2 py-1"><i class="bi bi-geo-alt-fill me-1"></i> Kolhapur Premiere</span>
+          <span class="badge badge-neon"><i class="bi bi-film me-1"></i> Cinematic Discovery</span>
+          <span class="badge bg-danger text-light px-2 py-1"><i class="bi bi-geo-alt-fill me-1"></i> Kolhapur Theatres</span>
+          <span class="badge bg-secondary"><i class="bi bi-patch-check-fill me-1"></i> Verified Schedules</span>
         </div>
 
-        <h1 class="display-4 fw-bold text-white mb-2" style="letter-spacing: -1.5px; line-height: 1.1;">
-          Pushpa 2: <br>
-          <span style="background: linear-gradient(135deg, #fb923c, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">The Rule</span>
+        <h1 class="display-4 fw-bold text-white mb-3" style="letter-spacing: -1.5px; line-height: 1.15;">
+          Experience the Magic of <br>
+          <span style="background: linear-gradient(135deg, #a5b4fc, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Big-Screen Cinema</span>
         </h1>
 
-        <p class="fs-5 text-secondary fst-italic mb-3">"పుష్ప 2: ది రూల్ • Directed by Sukumar"</p>
-
-        <p class="lead text-secondary mb-4" style="max-width: 620px; font-size: 1.05rem; line-height: 1.6;">
-          Pushpa Raj expands his syndicate beyond borders, facing off in an unrelenting clash against SP Bhanwar Singh Shekhawat in this historic pan-India spectacle.
+        <p class="lead text-secondary mb-4" style="max-width: 620px; font-size: 1.1rem; line-height: 1.6;">
+          Discover curated releases across Anime, Marvel, and Indian cinema. Explore verified Kolhapur venue schedules, compare auditorium tiers, and reserve your seats with instant confirmation.
         </p>
 
-        <div class="d-flex flex-wrap gap-3 align-items-center mb-3">
-          <a href="{{ url_for('booking.select_seats', movie_id='mov-south-1', theater_id='th-pvr-dyp', showtime='10:30 AM') }}" class="btn btn-cinematic btn-lg px-4 shadow">
-            <i class="bi bi-ticket-perforated-fill me-2 fs-5"></i> Reserve Kolhapur Show
+        <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
+          <a href="{{ url_for('main.movies_catalog') }}" class="btn btn-cinematic btn-lg px-4 shadow">
+            <i class="bi bi-film me-2 fs-5"></i> Explore Movies
           </a>
-          <a href="{{ url_for('main.movie_detail', movie_id='mov-south-1') }}" class="btn btn-outline-cinematic btn-lg px-4">
-            <i class="bi bi-info-circle me-2"></i> Film Details &amp; Schedule
+          <a href="#theaters-section" class="btn btn-outline-cinematic btn-lg px-4">
+            <i class="bi bi-clock-history me-2 text-warning"></i> Find Showtimes
           </a>
         </div>
 
         <div class="d-flex flex-wrap gap-4 text-secondary small pt-2">
-          <span><i class="bi bi-star-fill text-warning me-1"></i> <strong>6.8/10</strong> IMDb</span>
-          <span><i class="bi bi-clock me-1 text-info"></i> <strong>3h 20m</strong></span>
-          <span><i class="bi bi-shield-check me-1 text-success"></i> <strong>U/A Certified</strong></span>
-          <span><i class="bi bi-building me-1 text-primary"></i> <strong>PVR DYP City Mall</strong></span>
+          <span><i class="bi bi-camera-reels-fill text-primary me-1"></i> <strong>28+</strong> Curated Titles</span>
+          <span><i class="bi bi-building text-info me-1"></i> <strong>5</strong> Kolhapur Venues</span>
+          <span><i class="bi bi-shield-check text-success me-1"></i> <strong>Verified</strong> Screenings</span>
+          <span><i class="bi bi-lightning-charge-fill text-warning me-1"></i> <strong>Instant</strong> Confirmation</span>
         </div>
       </div>
 
-      <div class="col-lg-5 d-none d-lg-block text-center">
-        <div class="hero-poster-glow mx-auto" style="max-width: 320px;">
-          <div class="poster-container shadow-lg">
-            <img src="https://image.tmdb.org/t/p/w500/wzff2A6uE1Gk0dM7pC0e7iR7v8t.jpg"
-                 alt="Pushpa 2: The Rule"
-                 class="poster-img"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                 loading="lazy">
-            <div class="poster-art" style="background: linear-gradient(135deg, #431407 0%, #7c2d12 50%, #c2410c 100%); display: none; height: 100%;">
-              <div>
-                <span class="badge bg-warning text-dark fw-bold mb-2">⭐ 6.8 IMDb</span>
-                <div class="text-white-50 small">Allu Arjun • Sukumar</div>
-              </div>
-              <div>
-                <div class="poster-title text-white">PUSHPA 2: THE RULE</div>
-                <div class="small text-info mt-1">Telugu • 3h 20m • U/A</div>
-              </div>
+      <div class="col-lg-5 d-none d-lg-block">
+        <div class="card-cinematic p-4 p-xl-5 position-relative overflow-hidden" style="border: 1px solid rgba(99, 102, 241, 0.35); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);">
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="brand-icon d-inline-flex align-items-center justify-content-center" style="width: 52px; height: 52px; border-radius: 14px;">
+              <i class="bi bi-film fs-3"></i>
             </div>
+            <div>
+              <h5 class="text-white fw-bold mb-0">Kolhapur Cinema Hub</h5>
+              <span class="text-secondary small"><i class="bi bi-circle-fill text-success me-1" style="font-size: 0.5rem;"></i> Active Schedules Available</span>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-3">
+            <div class="p-3 rounded bg-dark border border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge badge-anime">Anime</span>
+                <span class="text-white small fw-semibold">Iconic Premieres</span>
+              </div>
+              <span class="text-secondary small">Shinkai &amp; Classics</span>
+            </div>
+
+            <div class="p-3 rounded bg-dark border border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge badge-marvel">Marvel</span>
+                <span class="text-white small fw-semibold">MCU Saga</span>
+              </div>
+              <span class="text-secondary small">Multiverse Hits</span>
+            </div>
+
+            <div class="p-3 rounded bg-dark border border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge badge-south">South</span>
+                <span class="text-white small fw-semibold">Pan-India Giants</span>
+              </div>
+              <span class="text-secondary small">Blockbuster Releases</span>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center text-secondary small">
+            <span><i class="bi bi-geo-alt-fill text-danger me-1"></i> Kolhapur, Maharashtra</span>
+            <a href="#theaters-section" class="text-info fw-semibold text-decoration-none">
+              View Venues <i class="bi bi-arrow-down-short"></i>
+            </a>
           </div>
         </div>
       </div>
@@ -146,7 +169,7 @@
 </div>
 
 <!-- Real Kolhapur Cinema Venues Section -->
-<section class="container py-5">
+<section class="container py-5" id="theaters-section">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
       <h3 class="fw-bold text-white mb-1">
@@ -211,7 +234,7 @@
 </section>
 
 <!-- Filter Results or Main Catalogue Grid -->
-<section class="container pb-5">
+<section class="container pb-5" id="catalog-grid">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
       <h3 class="fw-bold text-white mb-1">
@@ -300,8 +323,8 @@
                     <i class="bi bi-ticket-perforated me-1"></i> Shows
                   </a>
                 {% else %}
-                  <span class="btn btn-outline-secondary btn-sm flex-fill disabled text-muted" title="No live showtimes in Kolhapur currently">
-                    Catalogue
+                  <span class="btn btn-disabled-action btn-sm flex-fill" aria-disabled="true" title="No live showtimes currently scheduled">
+                    <i class="bi bi-calendar-x me-1"></i> Unavailable
                   </span>
                 {% endif %}
               </div>
