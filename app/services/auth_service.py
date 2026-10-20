@@ -1,24 +1,39 @@
 """Authentication Service.
 Handles user registration, login verification, password strength checks, and session data.
 """
+import logging
 from typing import Optional, Dict, Any, Tuple
-from app.repositories import user_repository
+from app.repositories import (
+    user_repository,
+    DuplicateEmailError,
+    UserPersistenceError,
+    normalize_email,
+)
 from app.utils.security import hash_password, verify_password, validate_password_strength
+
+logger = logging.getLogger(__name__)
 
 
 class AuthService:
     """Business logic for authentication and authorization."""
 
-    def __init__(self, repo=user_repository):
-        self.repo = repo
+    def __init__(self, repo=None):
+        self._repo = repo
+
+    @property
+    def repo(self):
+        """Active user repository."""
+        if self._repo is not None:
+            return self._repo
+        return user_repository
 
     def register(self, email: str, password: str, full_name: str) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
-        """Register a new user account."""
-        email = email.strip().lower()
-        if not email or "@" not in email:
+        """Register a new user account with normalized email and atomic uniqueness."""
+        norm_email = normalize_email(email)
+        if not norm_email or "@" not in norm_email:
             return False, "A valid email address is required.", None
 
-        existing_user = self.repo.get_by_email(email)
+        existing_user = self.repo.get_by_email(norm_email)
         if existing_user:
             return False, "An account with this email address already exists.", None
 
@@ -30,13 +45,31 @@ class AuthService:
             return False, "Please enter your full name.", None
 
         hashed = hash_password(password)
-        new_user = self.repo.create_user(email=email, password_hash=hashed, full_name=full_name, role="user")
-        return True, "Registration successful! You may now sign in.", new_user
+        try:
+            new_user = self.repo.create_user(
+                email=norm_email,
+                password_hash=hashed,
+                full_name=full_name,
+                role="user"
+            )
+            return True, "Registration successful! You may now sign in.", new_user
+        except DuplicateEmailError:
+            return False, "An account with this email address already exists.", None
+        except UserPersistenceError as e:
+            logger.error("User persistence failure during registration: %s", type(e).__name__)
+            return False, "Unable to complete registration at this time. Please try again later.", None
+        except Exception as e:
+            logger.error("Unexpected error during registration: %s", type(e).__name__)
+            return False, "Unable to complete registration at this time. Please try again later.", None
 
     def authenticate(self, email: str, password: str) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
         """Authenticate user by email and password."""
-        email = email.strip().lower()
-        user = self.repo.get_by_email(email)
+        norm_email = normalize_email(email)
+        try:
+            user = self.repo.get_by_email(norm_email)
+        except Exception as e:
+            logger.error("Error retrieving user during authentication: %s", type(e).__name__)
+            return False, "Unable to sign in at this time. Please try again later.", None
 
         if not user:
             return False, "Invalid email or password.", None

@@ -4,11 +4,19 @@ A modern, cloud-native movie ticket booking application built with **Flask**, de
 
 ---
 
-## 🚀 Phase 2: Amazon DynamoDB Integration (Milestone 1 Complete)
+## 🚀 Phase 2: Amazon DynamoDB Integration (Milestones 1 & 2 Complete)
 
 Phase 2 transitions Movie Magic to a cloud-native AWS architecture using Amazon DynamoDB in the **`ap-south-1` (Mumbai)** region:
 
-- **Boto3 AWS Client Factory & Credential Chain**:
+- **DynamoDB User Authentication (Milestone 2)**:
+  - Backed by `moviemagic_users` table in `ap-south-1`.
+  - **Atomic Email Uniqueness**: Enforces email uniqueness via native DynamoDB `TransactWriteItems` writing both User Profile (`user_id = usr-<uuid>`) and Email Lock (`user_id = EMAIL#<email>`) with `attribute_not_exists(user_id)` condition.
+  - **Selective Cancellation Analysis**: Inspects `TransactionCanceledException` cancellation reasons, mapping only email-lock failures to `DuplicateEmailError` while handling other transient errors safely.
+  - **Normalized Email Handling**: Consistent whitespace stripping and lowercasing across registrations, lookups, locks, and logins.
+  - **Zero Schema Changes**: Fully compatible with existing table schema and sparse `EmailIndex` GSI.
+  - **Strict Anti-Degradation**: `USE_AWS_MOCK=False` raises an explicit `RuntimeError` if AWS credentials/client fail, prohibiting silent fallback to mock.
+  - **Mock Mode Continuity**: In-memory repository remains active by default with pre-seeded demo accounts.
+- **Boto3 AWS Client Factory & Credential Chain (Milestone 1)**:
   - Centralized in `app/aws/client_factory.py`.
   - Supports standard AWS credential resolution (IAM roles on EC2 IMDSv2, AWS credentials file, profiles, environment variables).
   - Configurable `DYNAMODB_ENDPOINT_URL` for local DynamoDB (`http://localhost:8000`) or testing containers.
@@ -94,7 +102,7 @@ Phase 1.5 upgrades Movie Magic from generic placeholder data to a curated, verif
 | **Database** | Amazon DynamoDB (`ap-south-1` Mumbai, on-demand PAY_PER_REQUEST, with mock fallback) |
 | **Messaging (Planned Phase 2)** | Amazon SNS (Booking Confirmation Emails) |
 | **Hosting & Web Server** | Amazon EC2, Gunicorn (WSGI), Nginx reverse proxy |
-| **Testing** | Pytest 8+ (73 automated tests) |
+| **Testing** | Pytest 8+ (92 automated tests) |
 
 ---
 
@@ -131,11 +139,11 @@ TMDB_API_KEY=your_free_tmdb_api_key_here
 *Note: Movie Magic functions out of the box without any third-party API key.*
 
 ### 5. Run the Automated Test Suite
-Execute pytest to run the complete 73-test suite:
+Execute pytest to run the complete 92-test suite:
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
 ```
-*Expected result: 73 passed in < 1.5 seconds.*
+*Expected result: 92 passed in < 3.0 seconds.*
 
 ### 6. Inspect DynamoDB Table Schemas & Catalogue Seeder (Dry-Run)
 Inspect table schemas and catalogue seeding data safely in read-only mode:
