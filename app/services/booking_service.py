@@ -21,10 +21,19 @@ SEAT_CODE_REGEX = re.compile(r"^[A-H](?:[1-9]|10)$")
 class BookingService:
     """Business logic for reservations, seat map generation, and booking receipts."""
 
-    def __init__(self, repo=None, movie_repo=None, sns_service=None):
+    def __init__(self, repo=None, movie_repo=None, sns_service=None, email_service=None):
         self._repo = repo
         self._movie_repo = movie_repo
         self._sns_service = sns_service
+        self._email_service = email_service
+
+    @property
+    def email_service(self):
+        """Active customer transactional email service adapter."""
+        if self._email_service is not None:
+            return self._email_service
+        from app.services.email_service import email_service
+        return email_service
 
     @property
     def sns_service(self):
@@ -195,6 +204,25 @@ class BookingService:
                 "Unexpected exception in SNS notification dispatch for booking %s: %s",
                 booking.get("id") or booking.get("booking_id"),
                 sns_err,
+            )
+
+        # Isolated Customer Email dispatch: email failures must NEVER invalidate a completed reservation
+        try:
+            email_sent = self.email_service.send_booking_confirmation_email(
+                booking=booking,
+                customer_email=user_email,
+            )
+            if not email_sent:
+                logger.warning(
+                    "Customer confirmation email not delivered for booking %s to %s. Reservation remains confirmed.",
+                    booking.get("id") or booking.get("booking_id"),
+                    user_email,
+                )
+        except Exception as email_err:
+            logger.error(
+                "Unexpected exception in customer email dispatch for booking %s: %s",
+                booking.get("id") or booking.get("booking_id"),
+                email_err,
             )
 
         return True, "Booking confirmed successfully!", booking

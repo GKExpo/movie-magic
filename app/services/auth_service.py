@@ -17,8 +17,17 @@ logger = logging.getLogger(__name__)
 class AuthService:
     """Business logic for authentication and authorization."""
 
-    def __init__(self, repo=None):
+    def __init__(self, repo=None, email_service=None):
         self._repo = repo
+        self._email_service = email_service
+
+    @property
+    def email_service(self):
+        """Active email service adapter."""
+        if self._email_service is not None:
+            return self._email_service
+        from app.services.email_service import email_service
+        return email_service
 
     @property
     def repo(self):
@@ -52,7 +61,6 @@ class AuthService:
                 full_name=full_name,
                 role="user"
             )
-            return True, "Registration successful! You may now sign in.", new_user
         except DuplicateEmailError:
             return False, "An account with this email address already exists.", None
         except UserPersistenceError as e:
@@ -61,6 +69,17 @@ class AuthService:
         except Exception as e:
             logger.error("Unexpected error during registration: %s", type(e).__name__)
             return False, "Unable to complete registration at this time. Please try again later.", None
+
+        # Isolated customer welcome email dispatch: email failure must NEVER invalidate a successful registration
+        try:
+            self.email_service.send_welcome_email(
+                user_email=new_user.get("email", norm_email),
+                user_name=new_user.get("full_name", full_name),
+            )
+        except Exception as email_err:
+            logger.error("Failed to dispatch welcome email for %s: %s", norm_email, email_err)
+
+        return True, "Registration successful! You may now sign in.", new_user
 
     def authenticate(self, email: str, password: str) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
         """Authenticate user by email and password."""

@@ -33,6 +33,12 @@ class Config:
     SNS_BOOKING_TOPIC_ARN = os.environ.get("SNS_BOOKING_TOPIC_ARN", "")
     USE_AWS_MOCK = os.environ.get("USE_AWS_MOCK", "True").lower() in ("true", "1", "yes")
 
+    # Resend Transactional Email Configuration
+    RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+    RESEND_FROM_EMAIL = os.environ.get("RESEND_FROM_EMAIL", "Movie Magic <tickets@mail.shardul.online>")
+    RESEND_REPLY_TO = os.environ.get("RESEND_REPLY_TO", "")
+    APP_BASE_URL = os.environ.get("APP_BASE_URL", "http://43.204.215.123")
+
     # Demo Credentials Visibility (for academic evaluation vs production hardening)
     SHOW_DEMO_CREDENTIALS = os.environ.get("SHOW_DEMO_CREDENTIALS", "True").lower() in ("true", "1", "yes")
 

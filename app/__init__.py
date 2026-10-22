@@ -33,13 +33,24 @@ def create_app(config_name: str = None) -> Flask:
     # Global context processors for Jinja templates
     @app.context_processor
     def inject_global_template_vars():
+        try:
+            user_id = session.get("user_id")
+            user_email = session.get("user_email")
+            user_name = session.get("user_name")
+            user_role = session.get("user_role")
+        except RuntimeError:
+            user_id = None
+            user_email = None
+            user_name = None
+            user_role = None
+
         return {
             "app_name": app.config.get("APP_NAME", "Movie Magic"),
-            "current_user_id": session.get("user_id"),
-            "current_user_email": session.get("user_email"),
-            "current_user_name": session.get("user_name"),
-            "current_user_role": session.get("user_role"),
-            "is_admin": session.get("user_role") == "admin",
+            "current_user_id": user_id,
+            "current_user_email": user_email,
+            "current_user_name": user_name,
+            "current_user_role": user_role,
+            "is_admin": user_role == "admin",
             "is_demo_mode": app.config.get("USE_AWS_MOCK", True),
             "show_demo_credentials": app.config.get("SHOW_DEMO_CREDENTIALS", False),
         }
